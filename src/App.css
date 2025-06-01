@@ -1,38 +1,109 @@
+/* Basic reset and layout */
 .App {
   text-align: center;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+/* React Flow custom styles */
+.react-flow__node {
+  cursor: pointer;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
+.react-flow__node:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  transform: translateY(-1px);
+  transition: all 0.2s ease-in-out;
+}
+
+/* Custom node styles */
+.react-flow__node-startNode,
+.react-flow__node-actionNode,
+.react-flow__node-decisionNode,
+.react-flow__node-terminalNode {
+  background: transparent;
+  border: none;
+  padding: 0;
+}
+
+/* Handle styles */
+.react-flow__handle {
+  width: 8px;
+  height: 8px;
+  border: 2px solid #fff;
+  background: #555;
+}
+
+.react-flow__handle-top {
+  top: -4px;
+}
+
+.react-flow__handle-bottom {
+  bottom: -4px;
+}
+
+.react-flow__handle-left {
+  left: -4px;
+}
+
+.react-flow__handle-right {
+  right: -4px;
+}
+
+/* Edge styles */
+.react-flow__edge-path {
+  stroke: #b1b1b7;
+  stroke-width: 2;
+}
+
+.react-flow__edge.selected .react-flow__edge-path {
+  stroke: #007bff;
+  stroke-width: 3;
+}
+
+.react-flow__edge-text {
+  font-size: 12px;
+  background: rgba(255, 255, 255, 0.9);
+  padding: 2px 4px;
+  border-radius: 3px;
+}
+
+/* Control panel styles */
+.react-flow__controls {
+  bottom: 20px;
+  left: 20px;
+}
+
+.react-flow__minimap {
+  bottom: 20px;
+  right: 20px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+/* Background */
+.react-flow__background {
+  background-color: #f8f9fa;
+}
+
+/* Panel styles */
+.react-flow__panel {
+  z-index: 10;
+}
+
+/* Animation for mode transitions */
+.workflow-transition {
+  transition: all 0.3s ease-in-out;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .react-flow__panel {
+    position: fixed !important;
+    bottom: 20px !important;
+    right: 20px !important;
+    top: auto !important;
   }
-}
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
-}
-
-.App-link {
-  color: #61dafb;
-}
-
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
+  
+  .react-flow__controls {
+    bottom: 100px;
   }
 }
