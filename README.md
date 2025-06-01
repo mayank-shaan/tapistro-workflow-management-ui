@@ -1,70 +1,72 @@
-# Getting Started with Create React App
+# Tapistro Workflow Management UI
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+A React-based workflow management interface built with ReactFlow and Material-UI for creating, editing, and managing complex workflows.
 
-## Available Scripts
+## Features
 
-In the project directory, you can run:
+- Visual workflow editor with drag-and-drop interface
+- Multiple node types: Start, Action, Decision, and Terminal nodes
+- Edit/View modes with node configuration panels
+- Collapse/expand functionality for complex workflows
+- Material-UI design system
 
-### `npm start`
+## Quick Start
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+```bash
+npm install
+npm start
+```
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+Open [http://localhost:3000](http://localhost:3000) to view the application.
 
-### `npm test`
+## Project Structure
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+```
+src/
+├── components/
+│   ├── Nodes/          # Workflow node components
+│   ├── UI/             # Reusable UI components
+│   └── Workflow/       # Main workflow components
+├── hooks/              # Custom React hooks
+├── utils/              # Utility functions
+├── App.js              # Main application component
+└── workflowExamples.js # Sample workflow data
+```
 
-### `npm run build`
+## Node Types
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+- **Start Node** 🟢: Entry points (webhook, manual, scheduled)
+- **Action Node** 🔵: Data processing operations
+- **Decision Node** 🟠: Conditional branching (if/else)
+- **Terminal Node** 🔴: Workflow endpoints
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+## Usage
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+1. Click "Edit Mode" to enable editing
+2. Use the node palette to add new nodes
+3. Drag from output handles to input handles to connect nodes
+4. Click nodes to configure them
+5. Use expand/collapse icons to manage complex workflows
 
-### `npm run eject`
+## Development
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+The application uses a modular component architecture:
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+- **BaseNode**: Extensible foundation for all node types
+- **WorkflowManager**: Main orchestrator component
+- **useWorkflow**: Custom hook for state management
+- **Material-UI**: Consistent styling without custom CSS
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+### Adding New Node Types
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+1. Create node component extending BaseNode
+2. Add to nodeTypes mapping
+3. Update NodeConfigForm for configuration
 
-## Learn More
+## Building
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+```bash
+npm run build
+```
 
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+Built with React, ReactFlow, and Material-UI.

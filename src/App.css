@@ -1,9 +1,7 @@
-/* Basic reset and layout */
 .App {
   text-align: center;
 }
 
-/* React Flow custom styles */
 .react-flow__node {
   cursor: pointer;
 }
@@ -14,7 +12,6 @@
   transition: all 0.2s ease-in-out;
 }
 
-/* Custom node styles */
 .react-flow__node-startNode,
 .react-flow__node-actionNode,
 .react-flow__node-decisionNode,
@@ -24,7 +21,6 @@
   padding: 0;
 }
 
-/* Handle styles */
 .react-flow__handle {
   width: 8px;
   height: 8px;
@@ -48,7 +44,6 @@
   right: -4px;
 }
 
-/* Edge styles */
 .react-flow__edge-path {
   stroke: #b1b1b7;
   stroke-width: 2;
@@ -66,7 +61,6 @@
   border-radius: 3px;
 }
 
-/* Control panel styles */
 .react-flow__controls {
   bottom: 20px;
   left: 20px;
@@ -79,22 +73,18 @@
   border-radius: 4px;
 }
 
-/* Background */
 .react-flow__background {
   background-color: #f8f9fa;
 }
 
-/* Panel styles */
 .react-flow__panel {
   z-index: 10;
 }
 
-/* Animation for mode transitions */
 .workflow-transition {
   transition: all 0.3s ease-in-out;
 }
 
-/* Responsive design */
 @media (max-width: 768px) {
   .react-flow__panel {
     position: fixed !important;
