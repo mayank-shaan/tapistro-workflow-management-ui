@@ -19,9 +19,10 @@ export const findAvailablePosition = (existingNodes, maxAttempts = 20) => {
   
   let attempts = 0;
   while (attempts < maxAttempts) {
+    const currentPosition = newPosition;
     const hasOverlap = existingPositions.some(pos => 
-      Math.abs(pos.x - newPosition.x) < 180 && 
-      Math.abs(pos.y - newPosition.y) < 140
+      Math.abs(pos.x - currentPosition.x) < 180 && 
+      Math.abs(pos.y - currentPosition.y) < 140
     );
     
     if (!hasOverlap) break;
