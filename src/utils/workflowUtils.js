@@ -54,7 +54,7 @@ export const getNodeTypeConfig = (nodeType) => {
       label: 'Start',
       color: '#4caf50',
       defaultConfig: {
-        inputType: 'webhook',
+        inputType: 'manual',
         description: 'Entry point for the workflow'
       }
     },
@@ -62,25 +62,27 @@ export const getNodeTypeConfig = (nodeType) => {
       label: 'Action',
       color: '#2196f3',
       defaultConfig: {
-        actionType: 'process',
+        actionType: 'transform',
         parameters: {},
-        description: 'Perform an action'
+        description: 'Perform an action or process data'
       }
     },
     decisionNode: {
       label: 'Decision',
       color: '#ff9800',
       defaultConfig: {
-        condition: 'if-else',
-        branches: ['Yes', 'No'],
-        description: 'Make a decision'
+        condition: 'data.value > 0',
+        trueBranchLabel: 'True',
+        falseBranchLabel: 'False',
+        description: 'Make a true/false decision'
       }
     },
     terminalNode: {
       label: 'Terminal',
       color: '#f44336',
       defaultConfig: {
-        status: 'end',
+        status: 'completed',
+        returnValue: {},
         description: 'End of workflow'
       }
     }

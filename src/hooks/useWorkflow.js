@@ -42,6 +42,27 @@ export const useWorkflow = (initialNodes = [], initialEdges = []) => {
     [setEdges, nodes, edges]
   );
 
+  // Enhanced onNodesChange to track position changes for undo/redo
+  const handleNodesChange = useCallback((changes) => {
+    // Check if there are position changes that should be tracked
+    const hasPositionChanges = changes.some(change => 
+      change.type === 'position' && change.dragging === false // Only track when drag ends
+    );
+    
+    // Check if there are important structural changes
+    const hasStructuralChanges = changes.some(change => 
+      change.type === 'add' || change.type === 'remove'
+    );
+    
+    // Add to history for structural changes or completed position changes
+    if (hasStructuralChanges || hasPositionChanges) {
+      setWorkflowHistory(prev => [...prev, { nodes, edges }]);
+    }
+    
+    // Apply the changes
+    onNodesChange(changes);
+  }, [onNodesChange, nodes, edges]);
+
   // Enhanced onEdgesChange to handle all edge operations properly
   const handleEdgesChange = useCallback((changes) => {
     // Add to history before making changes (for non-trivial changes)
@@ -98,7 +119,7 @@ export const useWorkflow = (initialNodes = [], initialEdges = []) => {
     setNodes((nds) =>
       nds.map((node) => {
         if (node.id === nodeId) {
-          return {
+          const updatedNode = {
             ...node,
             data: {
               ...node.data,
@@ -106,6 +127,13 @@ export const useWorkflow = (initialNodes = [], initialEdges = []) => {
               label: newConfig.label || node.data.label,
             },
           };
+
+          // Special handling for decision nodes - sync branches
+          if (node.type === 'decisionNode' && newConfig.branches) {
+            updatedNode.data.branches = newConfig.branches;
+          }
+
+          return updatedNode;
         }
         return node;
       })
@@ -248,7 +276,7 @@ export const useWorkflow = (initialNodes = [], initialEdges = []) => {
     collapsedNodes,
     validation,
     
-    onNodesChange,
+    onNodesChange: handleNodesChange, // Use enhanced version
     onEdgesChange: handleEdgesChange, // Use enhanced version
     onConnect,
     onNodeClick,
@@ -257,7 +285,7 @@ export const useWorkflow = (initialNodes = [], initialEdges = []) => {
     addNode,
     saveNodeConfig,
     deleteNode,
-    deleteEdge, // New function
+    deleteEdge,
     toggleNodeCollapse,
     closeConfigDrawer,
     
@@ -265,9 +293,9 @@ export const useWorkflow = (initialNodes = [], initialEdges = []) => {
     autoLayout,
     validateWorkflow,
     undoLastAction,
-    clearHistory, // New function
+    clearHistory,
     canUndo: workflowHistory.length > 0,
-    historyCount: workflowHistory.length, // For debugging
+    historyCount: workflowHistory.length,
     
     rawNodes: nodes,
     rawEdges: edges,

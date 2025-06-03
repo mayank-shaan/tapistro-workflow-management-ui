@@ -23,6 +23,13 @@
   }
 }
 
+/* Animated dashed line for drag connection */
+@keyframes dragLineDash {
+  to {
+    stroke-dashoffset: -100;
+  }
+}
+
 /* Enhanced edge hover effects */
 .react-flow__edge.react-flow__edge-custom {
   transition: all 0.2s ease-in-out;
@@ -31,27 +38,6 @@
 .react-flow__edge.react-flow__edge-custom:hover {
   stroke-width: 3px !important;
   stroke: #1976d2 !important;
-}
-
-/* Edge update handle styling */
-.react-flow__edgeupdater {
-  width: 12px;
-  height: 12px;
-  background: #1976d2;
-  border: 2px solid white;
-  border-radius: 50%;
-  cursor: pointer;
-  opacity: 0;
-  transition: opacity 0.2s;
-}
-
-.react-flow__edge:hover .react-flow__edgeupdater {
-  opacity: 1;
-}
-
-.react-flow__edgeupdater:hover {
-  background: #1565c0;
-  transform: scale(1.2);
 }
 
 /* Add button container styling */
@@ -109,4 +95,151 @@
 .react-flow__handle {
   border: 2px solid #1976d2;
   background: white;
+  transition: all 0.2s ease-in-out;
+  width: 12px !important;
+  height: 12px !important;
+}
+
+.react-flow__handle:hover {
+  background: #1976d2;
+  transform: scale(1.3);
+}
+
+/* Subtle cursor indicators for draggable elements */
+.react-flow__node {
+  cursor: grab;
+  transition: all 0.2s ease-in-out;
+}
+
+.react-flow__node:active {
+  cursor: grabbing;
+}
+
+/* Node hover effects for better drag target visibility */
+.react-flow__node:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Edge interaction feedback */
+.react-flow__edge {
+  cursor: pointer;
+}
+
+.react-flow__edge:hover {
+  filter: drop-shadow(0 2px 4px rgba(25, 118, 210, 0.3));
+}
+
+/* Make edges thicker for easier interaction */
+.react-flow__edge-path {
+  stroke-width: 2px;
+}
+
+.react-flow__edge:hover .react-flow__edge-path {
+  stroke-width: 4px;
+}
+
+/* Custom edge reconnection handles styling */
+.custom-reconnect-handle {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 3px solid white;
+  cursor: grab;
+  transition: all 0.2s ease-in-out;
+  z-index: 1001;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.custom-reconnect-handle:hover {
+  transform: scale(1.2);
+  cursor: grab;
+}
+
+.custom-reconnect-handle:active {
+  cursor: grabbing;
+}
+
+.custom-reconnect-handle.source {
+  background-color: #ff9800;
+  box-shadow: 0 2px 8px rgba(255, 152, 0, 0.5);
+}
+
+.custom-reconnect-handle.target {
+  background-color: #4caf50;
+  box-shadow: 0 2px 8px rgba(76, 175, 80, 0.5);
+}
+
+.custom-reconnect-handle.source:hover {
+  background-color: #f57c00;
+  box-shadow: 0 3px 12px rgba(245, 124, 0, 0.7);
+}
+
+.custom-reconnect-handle.target:hover {
+  background-color: #388e3c;
+  box-shadow: 0 3px 12px rgba(56, 142, 60, 0.7);
+}
+
+/* Visual feedback during edge reconnection drag */
+.react-flow__node.drag-target {
+  outline: 3px solid #1976d2 !important;
+  outline-offset: 2px !important;
+  background-color: rgba(25, 118, 210, 0.1) !important;
+}
+
+/* Drag line styling */
+#drag-connection-line {
+  stroke: #1976d2;
+  stroke-width: 3;
+  stroke-dasharray: 8,4;
+  opacity: 0.8;
+  animation: dragLineDash 1s linear infinite;
+  filter: drop-shadow(0 2px 4px rgba(25, 118, 210, 0.3));
+}
+
+/* Enhanced visual feedback during drag */
+.react-flow__edge.being-dragged {
+  opacity: 0.3 !important;
+  stroke-dasharray: 10,5 !important;
+  animation: dashMove 1s linear infinite !important;
+}
+
+/* Pulsing effect for drag handles during active drag */
+.drag-handle-active {
+  animation: pulse-drag-handle 0.8s ease-in-out infinite alternate;
+}
+
+@keyframes pulse-drag-handle {
+  0% {
+    transform: scale(1.1);
+    box-shadow: 0 4px 16px rgba(25, 118, 210, 0.6);
+  }
+  100% {
+    transform: scale(1.3);
+    box-shadow: 0 6px 20px rgba(25, 118, 210, 0.8);
+  }
+}
+
+/* Improve node highlight during drag over */
+.react-flow__node[style*="outline"] {
+  animation: node-drag-highlight 0.5s ease-in-out infinite alternate;
+}
+
+@keyframes node-drag-highlight {
+  0% {
+    outline-color: #1976d2 !important;
+    outline-width: 3px !important;
+  }
+  100% {
+    outline-color: #1565c0 !important;
+    outline-width: 4px !important;
+  }
+}
+
+/* Smooth transitions for all interactions */
+* {
+  transition: outline 0.1s ease-in-out, background-color 0.1s ease-in-out, opacity 0.2s ease-in-out;
 }

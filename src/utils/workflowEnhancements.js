@@ -9,8 +9,8 @@ export const autoLayoutWorkflow = (nodes, edges) => {
   // Add nodes to dagre graph
   nodes.forEach((node) => {
     dagreGraph.setNode(node.id, { 
-      width: node.type === 'decisionNode' ? 200 : node.type === 'groupNode' ? 250 : 150, 
-      height: node.type === 'groupNode' ? 120 : 80 
+      width: node.type === 'decisionNode' ? 200 : 150, 
+      height: 80 
     });
   });
 
@@ -37,112 +37,81 @@ export const autoLayoutWorkflow = (nodes, edges) => {
   return { nodes: layoutedNodes, edges };
 };
 
-// Enhanced Connection validation
+// Simplified and more permissive connection validation
 export const validateConnection = (connection, nodes, edges) => {
+  console.log('🔍 Validating connection:', {
+    source: connection.source,
+    target: connection.target,
+    sourceHandle: connection.sourceHandle,
+    targetHandle: connection.targetHandle
+  });
+
   const sourceNode = nodes.find(n => n.id === connection.source);
   const targetNode = nodes.find(n => n.id === connection.target);
   
-  // Prevent self-connections
-  if (connection.source === connection.target) {
-    return false;
-  }
-  
   // Check if nodes exist
   if (!sourceNode || !targetNode) {
+    console.log('❌ Validation failed: Source or target node not found');
+    return false;
+  }
+
+  console.log('📝 Node types:', {
+    source: `${sourceNode.type} (${sourceNode.data?.label})`,
+    target: `${targetNode.type} (${targetNode.data?.label})`
+  });
+  
+  // Prevent self-connections
+  if (connection.source === connection.target) {
+    console.log('❌ Validation failed: Self-connection not allowed');
     return false;
   }
   
-  // Check if connection already exists
+  // Check if connection already exists (ignore handles for this check)
   const connectionExists = edges.some(edge => 
     edge.source === connection.source && edge.target === connection.target
   );
   if (connectionExists) {
+    console.log('❌ Validation failed: Connection already exists');
     return false;
   }
 
-  // Enhanced validation based on node types
+  // Basic node type validation - only block clearly invalid connections
   if (sourceNode.type === 'terminalNode') {
+    console.log('❌ Validation failed: Terminal nodes cannot have outgoing connections');
     return false;
   }
 
   if (targetNode.type === 'startNode') {
+    console.log('❌ Validation failed: Start nodes cannot have incoming connections');
     return false;
   }
 
-  // Check for decision node branch limits
-  if (sourceNode.type === 'decisionNode') {
-    const existingOutgoingEdges = edges.filter(e => e.source === connection.source);
-    const maxBranches = sourceNode.data?.config?.maxBranches || 2;
-    
-    if (existingOutgoingEdges.length >= maxBranches) {
-      return false;
-    }
-  }
-
-  // Check for circular references (prevent infinite loops)
-  if (wouldCreateCycle(connection, edges)) {
-    return false;
-  }
-
-  // Check target node input limits
+  // More permissive input limits
   const incomingEdges = edges.filter(e => e.target === connection.target);
   const maxInputs = getMaxInputsForNodeType(targetNode.type);
   
   if (incomingEdges.length >= maxInputs) {
+    console.log(`❌ Validation failed: Target node already has maximum inputs (${maxInputs})`);
     return false;
   }
 
+  console.log('✅ Connection validation passed');
   return true;
 };
 
-// Helper function to detect cycles
-const wouldCreateCycle = (newConnection, existingEdges) => {
-  // Create a temporary edge list with the new connection
-  const allEdges = [...existingEdges, newConnection];
-  
-  // Build adjacency list
-  const graph = {};
-  allEdges.forEach(edge => {
-    if (!graph[edge.source]) graph[edge.source] = [];
-    graph[edge.source].push(edge.target);
-  });
-  
-  // DFS to detect cycle starting from the new connection's target
-  const visited = new Set();
-  const recursionStack = new Set();
-  
-  const hasCycle = (node) => {
-    if (recursionStack.has(node)) return true;
-    if (visited.has(node)) return false;
-    
-    visited.add(node);
-    recursionStack.add(node);
-    
-    const neighbors = graph[node] || [];
-    for (const neighbor of neighbors) {
-      if (hasCycle(neighbor)) return true;
-    }
-    
-    recursionStack.delete(node);
-    return false;
-  };
-  
-  return hasCycle(newConnection.target);
-};
-
-// Get maximum allowed inputs for each node type
+// More permissive input limits for the 4 core node types
 const getMaxInputsForNodeType = (nodeType) => {
   switch (nodeType) {
     case 'startNode':
       return 0; // Start nodes should not have inputs
     case 'decisionNode':
+      return 5; // Decision nodes can have multiple inputs
     case 'actionNode':
+      return 5; // Action nodes can have multiple inputs
     case 'terminalNode':
-      return 1; // These typically have one input
-    case 'groupNode':
-      return 5; // Groups can have multiple inputs
+      return 5; // Terminal nodes can have multiple inputs
     default:
-      return 1;
+      return 5; // Default to permissive
   }
 };
 
@@ -256,7 +225,7 @@ export class WorkflowValidator {
   }
 }
 
-// Node Factory for Creating Different Node Types (Enhanced)
+// Node Factory for Creating the 4 Core Node Types
 export const NodeFactory = {
   createStartNode: (position, data = {}) => ({
     id: `start_${Date.now()}`,
@@ -264,8 +233,10 @@ export const NodeFactory = {
     position,
     data: {
       label: 'Start',
-      type: 'webhook',
-      config: {},
+      config: {
+        inputType: 'manual',
+        description: 'Workflow entry point'
+      },
       ...data
     }
   }),
@@ -276,8 +247,11 @@ export const NodeFactory = {
     position,
     data: {
       label: 'Action',
-      actionType: 'http_request',
-      config: {},
+      config: {
+        actionType: 'transform',
+        parameters: {},
+        description: 'Process data or perform action'
+      },
       ...data
     }
   }),
@@ -288,9 +262,12 @@ export const NodeFactory = {
     position,
     data: {
       label: 'Decision',
-      condition: '',
-      branches: ['Yes', 'No'],
-      config: { maxBranches: 2 },
+      config: {
+        condition: 'data.value > 0',
+        trueBranchLabel: 'True',
+        falseBranchLabel: 'False',
+        description: 'Evaluate condition and branch'
+      },
       ...data
     }
   }),
@@ -301,71 +278,12 @@ export const NodeFactory = {
     position,
     data: {
       label: 'End',
-      action: 'success',
-      config: {},
-      ...data
-    }
-  }),
-
-  createGroupNode: (position, childNodes = [], data = {}) => ({
-    id: `group_${Date.now()}`,
-    type: 'groupNode',
-    position,
-    data: {
-      label: 'Group',
-      childNodes: childNodes.map(n => n.id),
-      expanded: true,
+      config: {
+        status: 'completed',
+        returnValue: {},
+        description: 'Workflow completion'
+      },
       ...data
     }
   })
-};
-
-// Group management utilities
-export const createGroupFromSelection = (selectedNodes, nodes, edges) => {
-  if (selectedNodes.length < 2) return null;
-  
-  const minX = Math.min(...selectedNodes.map(n => n.position.x));
-  const minY = Math.min(...selectedNodes.map(n => n.position.y));
-  const maxX = Math.max(...selectedNodes.map(n => n.position.x + 150));
-  const maxY = Math.max(...selectedNodes.map(n => n.position.y + 80));
-  
-  const groupNode = NodeFactory.createGroupNode(
-    { x: minX - 20, y: minY - 20 },
-    selectedNodes,
-    {
-      label: 'New Group',
-      description: `Group of ${selectedNodes.length} nodes`,
-      bounds: { minX, minY, maxX, maxY }
-    }
-  );
-
-  return groupNode;
-};
-
-export const expandGroup = (groupNode, nodes) => {
-  const childNodeIds = groupNode.data.childNodes || [];
-  return nodes.map(node => {
-    if (childNodeIds.includes(node.id)) {
-      return {
-        ...node,
-        hidden: false,
-        style: { ...node.style, opacity: 1, pointerEvents: 'all' }
-      };
-    }
-    return node;
-  });
-};
-
-export const collapseGroup = (groupNode, nodes) => {
-  const childNodeIds = groupNode.data.childNodes || [];
-  return nodes.map(node => {
-    if (childNodeIds.includes(node.id)) {
-      return {
-        ...node,
-        hidden: true,
-        style: { ...node.style, opacity: 0, pointerEvents: 'none' }
-      };
-    }
-    return node;
-  });
 };

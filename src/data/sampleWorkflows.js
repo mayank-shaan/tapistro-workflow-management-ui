@@ -1,275 +1,366 @@
-// Sample workflow data based on the client's screenshot
+// Sample workflow data with only 4 core node types: Start, Action, Decision, Terminal
 export const sampleWorkflowData = {
   nodes: [
     {
-      id: 'enrich-1',
+      id: 'start-1',
       type: 'startNode',
       position: { x: 400, y: 50 },
       data: {
-        label: 'Enrich',
+        label: 'Start Workflow',
         config: {
           inputType: 'webhook',
-          description: '3 Personas, 25 Titles'
+          description: 'Workflow entry point for data processing'
         }
       }
     },
     {
-      id: 'decision-persona',
+      id: 'action-enrich',
+      type: 'actionNode',
+      position: { x: 400, y: 150 },
+      data: {
+        label: 'Enrich Data',
+        config: {
+          actionType: 'transform',
+          parameters: {
+            personas: 3,
+            titles: 25
+          },
+          description: 'Enrich incoming data with personas and titles'
+        }
+      }
+    },
+    {
+      id: 'decision-persona-ops',
       type: 'decisionNode',
-      position: { x: 400, y: 200 },
+      position: { x: 200, y: 250 },
       data: {
-        label: 'Decision for Persona',
-        branches: ['Operations', 'Finance', 'Human Resources'],
+        label: 'Check Operations?',
         config: {
-          condition: 'Based on persona type',
-          description: 'Route to appropriate persona workflow'
+          condition: 'data.persona === "operations"',
+          trueBranchLabel: 'Operations',
+          falseBranchLabel: 'Finance',
+          description: 'Check if persona is operations or finance'
         }
       }
     },
     {
-      id: 'content-ops',
-      type: 'actionNode',
-      position: { x: 150, y: 350 },
+      id: 'decision-persona-finance',
+      type: 'decisionNode',
+      position: { x: 600, y: 250 },
       data: {
-        label: 'Personalised Content',
+        label: 'Check Finance?',
         config: {
-          actionType: 'content_generation',
-          description: 'AI Brief Operations'
+          condition: 'data.persona === "finance"',
+          trueBranchLabel: 'Finance',
+          falseBranchLabel: 'HR',
+          description: 'Check if persona is finance or HR'
         }
       }
     },
     {
-      id: 'content-finance',
+      id: 'action-content-ops',
       type: 'actionNode',
-      position: { x: 400, y: 350 },
+      position: { x: 100, y: 350 },
       data: {
-        label: 'Personalised Content',
+        label: 'Operations Content',
         config: {
-          actionType: 'content_generation',
-          description: 'AI Brief Finance'
+          actionType: 'api',
+          parameters: {
+            contentType: 'operations',
+            template: 'ops-brief'
+          },
+          description: 'Generate personalized content for operations'
         }
       }
     },
     {
-      id: 'content-hr',
+      id: 'action-content-finance',
       type: 'actionNode',
-      position: { x: 650, y: 350 },
+      position: { x: 500, y: 350 },
       data: {
-        label: 'Personalised Content',
+        label: 'Finance Content',
         config: {
-          actionType: 'content_generation',
-          description: 'AI Brief Human Resources'
+          actionType: 'api',
+          parameters: {
+            contentType: 'finance',
+            template: 'finance-brief'
+          },
+          description: 'Generate personalized content for finance'
         }
       }
     },
     {
-      id: 'openai-ops',
+      id: 'action-content-hr',
       type: 'actionNode',
-      position: { x: 150, y: 450 },
+      position: { x: 700, y: 350 },
       data: {
-        label: 'OpenAI',
+        label: 'HR Content',
         config: {
-          actionType: 'ai_processing',
-          model: 'gpt-4',
+          actionType: 'api',
+          parameters: {
+            contentType: 'hr',
+            template: 'hr-brief'
+          },
+          description: 'Generate personalized content for HR'
+        }
+      }
+    },
+    {
+      id: 'action-openai-ops',
+      type: 'actionNode',
+      position: { x: 100, y: 450 },
+      data: {
+        label: 'OpenAI Processing',
+        config: {
+          actionType: 'api',
+          parameters: {
+            model: 'gpt-4',
+            task: 'enhance-operations-content'
+          },
           description: 'AI processing for operations content'
         }
       }
     },
     {
-      id: 'openai-finance',
+      id: 'action-openai-finance',
       type: 'actionNode',
-      position: { x: 400, y: 450 },
+      position: { x: 500, y: 450 },
       data: {
-        label: 'OpenAI',
+        label: 'OpenAI Processing',
         config: {
-          actionType: 'ai_processing',
-          model: 'gpt-4',
+          actionType: 'api',
+          parameters: {
+            model: 'gpt-4',
+            task: 'enhance-finance-content'
+          },
           description: 'AI processing for finance content'
         }
       }
     },
     {
-      id: 'openai-hr',
+      id: 'action-openai-hr',
       type: 'actionNode',
-      position: { x: 650, y: 450 },
+      position: { x: 700, y: 450 },
       data: {
-        label: 'OpenAI',
+        label: 'OpenAI Processing',
         config: {
-          actionType: 'ai_processing',
-          model: 'gpt-4',
+          actionType: 'api',
+          parameters: {
+            model: 'gpt-4',
+            task: 'enhance-hr-content'
+          },
           description: 'AI processing for HR content'
         }
       }
     },
     {
-      id: 'delivery-ops',
+      id: 'action-delivery-ops',
       type: 'actionNode',
-      position: { x: 150, y: 550 },
+      position: { x: 100, y: 550 },
       data: {
         label: 'Delivery',
         config: {
-          actionType: 'email_delivery',
-          description: 'Add to personalised email sequence'
+          actionType: 'email',
+          parameters: {
+            sequence: 'operations-email-sequence'
+          },
+          description: 'Add to operations email sequence'
         }
       }
     },
     {
-      id: 'delivery-finance',
+      id: 'action-delivery-finance',
       type: 'actionNode',
-      position: { x: 400, y: 550 },
+      position: { x: 500, y: 550 },
       data: {
         label: 'Delivery',
         config: {
-          actionType: 'email_delivery',
-          description: 'Add to personalised email sequence'
+          actionType: 'email',
+          parameters: {
+            sequence: 'finance-email-sequence'
+          },
+          description: 'Add to finance email sequence'
         }
       }
     },
     {
-      id: 'delivery-hr',
+      id: 'action-delivery-hr',
       type: 'actionNode',
-      position: { x: 650, y: 550 },
+      position: { x: 700, y: 550 },
       data: {
         label: 'Delivery',
         config: {
-          actionType: 'email_delivery',
-          description: 'Add to personalised email sequence'
+          actionType: 'email',
+          parameters: {
+            sequence: 'hr-email-sequence'
+          },
+          description: 'Add to HR email sequence'
         }
       }
     },
     {
-      id: 'tapistro-ops',
+      id: 'terminal-ops',
       type: 'terminalNode',
-      position: { x: 150, y: 650 },
+      position: { x: 100, y: 650 },
       data: {
-        label: 'Tapistro',
+        label: 'Operations Complete',
         config: {
-          status: 'success',
-          description: 'Operations workflow completed'
+          status: 'completed',
+          returnValue: {
+            persona: 'operations',
+            status: 'success'
+          },
+          description: 'Operations workflow completed successfully'
         }
       }
     },
     {
-      id: 'tapistro-finance',
+      id: 'terminal-finance',
       type: 'terminalNode',
-      position: { x: 400, y: 650 },
+      position: { x: 500, y: 650 },
       data: {
-        label: 'Tapistro',
+        label: 'Finance Complete',
         config: {
-          status: 'success',
-          description: 'Finance workflow completed'
+          status: 'completed',
+          returnValue: {
+            persona: 'finance',
+            status: 'success'
+          },
+          description: 'Finance workflow completed successfully'
         }
       }
     },
     {
-      id: 'tapistro-hr',
+      id: 'terminal-hr',
       type: 'terminalNode',
-      position: { x: 650, y: 650 },
+      position: { x: 700, y: 650 },
       data: {
-        label: 'Tapistro',
+        label: 'HR Complete',
         config: {
-          status: 'success',
-          description: 'HR workflow completed'
+          status: 'completed',
+          returnValue: {
+            persona: 'hr',
+            status: 'success'
+          },
+          description: 'HR workflow completed successfully'
         }
       }
     }
   ],
   edges: [
-    // Main flow from start to decision
+    // Start to Enrich
     {
-      id: 'enrich-to-decision',
-      source: 'enrich-1',
-      target: 'decision-persona',
+      id: 'start-to-enrich',
+      source: 'start-1',
+      target: 'action-enrich',
       type: 'custom'
     },
-    
-    // Decision branches to content nodes
+    // Enrich to Decision nodes
     {
-      id: 'decision-to-ops',
-      source: 'decision-persona',
-      sourceHandle: 'operations',
-      target: 'content-ops',
-      type: 'custom'
-    },
-    {
-      id: 'decision-to-finance',
-      source: 'decision-persona',
-      sourceHandle: 'finance',
-      target: 'content-finance',
+      id: 'enrich-to-ops-decision',
+      source: 'action-enrich',
+      target: 'decision-persona-ops',
       type: 'custom'
     },
     {
-      id: 'decision-to-hr',
-      source: 'decision-persona',
-      sourceHandle: 'human_resources',
-      target: 'content-hr',
+      id: 'enrich-to-finance-decision',
+      source: 'action-enrich',
+      target: 'decision-persona-finance',
       type: 'custom'
     },
-    
-    // Content to OpenAI processing
+    // Operations Decision Branches (both TRUE and FALSE)
+    {
+      id: 'ops-decision-true',
+      source: 'decision-persona-ops',
+      sourceHandle: 'true',
+      target: 'action-content-ops',
+      type: 'custom'
+    },
+    {
+      id: 'ops-decision-false',
+      source: 'decision-persona-ops',
+      sourceHandle: 'false',
+      target: 'action-content-finance',
+      type: 'custom'
+    },
+    // Finance Decision Branches
+    {
+      id: 'finance-decision-true',
+      source: 'decision-persona-finance',
+      sourceHandle: 'true',
+      target: 'action-content-finance',
+      type: 'custom'
+    },
+    {
+      id: 'finance-decision-false',
+      source: 'decision-persona-finance',
+      sourceHandle: 'false',
+      target: 'action-content-hr',
+      type: 'custom'
+    },
+    // Content to OpenAI
     {
       id: 'content-ops-to-openai',
-      source: 'content-ops',
-      target: 'openai-ops',
+      source: 'action-content-ops',
+      target: 'action-openai-ops',
       type: 'custom'
     },
     {
       id: 'content-finance-to-openai',
-      source: 'content-finance',
-      target: 'openai-finance',
+      source: 'action-content-finance',
+      target: 'action-openai-finance',
       type: 'custom'
     },
     {
       id: 'content-hr-to-openai',
-      source: 'content-hr',
-      target: 'openai-hr',
+      source: 'action-content-hr',
+      target: 'action-openai-hr',
       type: 'custom'
     },
-    
-    // OpenAI to delivery
+    // OpenAI to Delivery
     {
       id: 'openai-ops-to-delivery',
-      source: 'openai-ops',
-      target: 'delivery-ops',
+      source: 'action-openai-ops',
+      target: 'action-delivery-ops',
       type: 'custom'
     },
     {
       id: 'openai-finance-to-delivery',
-      source: 'openai-finance',
-      target: 'delivery-finance',
+      source: 'action-openai-finance',
+      target: 'action-delivery-finance',
       type: 'custom'
     },
     {
       id: 'openai-hr-to-delivery',
-      source: 'openai-hr',
-      target: 'delivery-hr',
+      source: 'action-openai-hr',
+      target: 'action-delivery-hr',
       type: 'custom'
     },
-    
-    // Delivery to terminal nodes
+    // Delivery to Terminal
     {
       id: 'delivery-ops-to-terminal',
-      source: 'delivery-ops',
-      target: 'tapistro-ops',
+      source: 'action-delivery-ops',
+      target: 'terminal-ops',
       type: 'custom'
     },
     {
       id: 'delivery-finance-to-terminal',
-      source: 'delivery-finance',
-      target: 'tapistro-finance',
+      source: 'action-delivery-finance',
+      target: 'terminal-finance',
       type: 'custom'
     },
     {
       id: 'delivery-hr-to-terminal',
-      source: 'delivery-hr',
-      target: 'tapistro-hr',
+      source: 'action-delivery-hr',
+      target: 'terminal-hr',
       type: 'custom'
     }
   ],
   metadata: {
-    name: 'Persona-based Content Generation Workflow',
-    description: 'A workflow that enriches personas and generates personalized content for different departments',
-    version: '1.0',
-    createdAt: new Date().toISOString()
+    name: 'Core Workflow - 4 Node Types',
+    description: 'Workflow using only Start, Action, Decision, and Terminal nodes',
+    version: '1.1',
+    createdAt: new Date().toISOString(),
+    testScenario: 'Decision node with both TRUE and FALSE branches - test reconnection preserves correct handle'
   }
 };

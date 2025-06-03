@@ -5,7 +5,9 @@ import {
   FormControl,
   InputLabel,
   Select,
-  MenuItem
+  MenuItem,
+  Typography,
+  Divider
 } from '@mui/material';
 
 const NodeConfigForm = ({ nodeType, config, onChange }) => {
@@ -118,6 +120,10 @@ const NodeConfigForm = ({ nodeType, config, onChange }) => {
       case 'decisionNode':
         return (
           <>
+            <Typography variant="h6" sx={{ mb: 2 }}>
+              Decision Logic Configuration
+            </Typography>
+            
             <TextField
               fullWidth
               margin="normal"
@@ -125,24 +131,57 @@ const NodeConfigForm = ({ nodeType, config, onChange }) => {
               value={config.condition || ''}
               onChange={(e) => updateConfig('condition', e.target.value)}
               placeholder="data.value > 100"
-              helperText="JavaScript expression that evaluates to true/false"
+              helperText="JavaScript expression that evaluates to true or false"
+              multiline
+              rows={2}
             />
             
-            <TextField
-              fullWidth
-              margin="normal"
-              label="True Branch Label"
-              value={config.trueBranchLabel || 'Yes'}
-              onChange={(e) => updateConfig('trueBranchLabel', e.target.value)}
-            />
+            <Divider sx={{ my: 2 }} />
             
-            <TextField
-              fullWidth
-              margin="normal"
-              label="False Branch Label"
-              value={config.falseBranchLabel || 'No'}
-              onChange={(e) => updateConfig('falseBranchLabel', e.target.value)}
-            />
+            <Typography variant="subtitle1" sx={{ mb: 1 }}>
+              Branch Labels
+            </Typography>
+            
+            <Box sx={{ display: 'flex', gap: 2 }}>
+              <TextField
+                fullWidth
+                margin="normal"
+                label="True Branch Label"
+                value={config.trueBranchLabel || 'True'}
+                onChange={(e) => updateConfig('trueBranchLabel', e.target.value)}
+                helperText="Label for TRUE condition"
+              />
+              
+              <TextField
+                fullWidth
+                margin="normal"
+                label="False Branch Label"
+                value={config.falseBranchLabel || 'False'}
+                onChange={(e) => updateConfig('falseBranchLabel', e.target.value)}
+                helperText="Label for FALSE condition"
+              />
+            </Box>
+            
+            <Divider sx={{ my: 2 }} />
+            
+            <Typography variant="subtitle1" sx={{ mb: 1 }}>
+              Examples of Decision Conditions:
+            </Typography>
+            
+            <Box sx={{ backgroundColor: '#f5f5f5', p: 2, borderRadius: 1, mb: 2 }}>
+              <Typography variant="caption" display="block" sx={{ mb: 0.5 }}>
+                • <strong>data.age >= 18</strong> - Check if age is 18 or older
+              </Typography>
+              <Typography variant="caption" display="block" sx={{ mb: 0.5 }}>
+                • <strong>data.status === 'active'</strong> - Check if status is active
+              </Typography>
+              <Typography variant="caption" display="block" sx={{ mb: 0.5 }}>
+                • <strong>data.score > 80 && data.verified</strong> - Multiple conditions
+              </Typography>
+              <Typography variant="caption" display="block">
+                • <strong>data.type === 'premium' || data.vip</strong> - OR conditions
+              </Typography>
+            </Box>
             
             <TextField
               fullWidth
@@ -152,6 +191,7 @@ const NodeConfigForm = ({ nodeType, config, onChange }) => {
               onChange={(e) => updateConfig('description', e.target.value)}
               multiline
               rows={2}
+              placeholder="Describe what this decision checks for..."
             />
           </>
         );
