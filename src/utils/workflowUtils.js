@@ -1,4 +1,11 @@
-export const findChildNodes = (nodeId, edges, nodes = []) => {
+export const findChildNodes = (nodeId, edges, nodes = [], visited = new Set()) => {
+  // Prevent infinite recursion with cycle detection
+  if (visited.has(nodeId)) {
+    return [];
+  }
+  
+  visited.add(nodeId);
+  
   const directChildren = edges
     .filter(edge => edge.source === nodeId)
     .map(edge => edge.target);
@@ -6,11 +13,13 @@ export const findChildNodes = (nodeId, edges, nodes = []) => {
   let allChildren = [...directChildren];
   
   directChildren.forEach(childId => {
-    const grandChildren = findChildNodes(childId, edges, nodes);
-    allChildren = [...allChildren, ...grandChildren];
+    if (!visited.has(childId)) {
+      const grandChildren = findChildNodes(childId, edges, nodes, new Set(visited));
+      allChildren = [...allChildren, ...grandChildren];
+    }
   });
   
-  return allChildren;
+  return [...new Set(allChildren)]; // Remove duplicates
 };
 
 export const findAvailablePosition = (existingNodes, maxAttempts = 20) => {
@@ -63,6 +72,7 @@ export const getNodeTypeConfig = (nodeType) => {
       color: '#ff9800',
       defaultConfig: {
         condition: 'if-else',
+        branches: ['Yes', 'No'],
         description: 'Make a decision'
       }
     },

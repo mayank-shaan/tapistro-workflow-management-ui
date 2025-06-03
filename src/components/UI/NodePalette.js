@@ -3,9 +3,7 @@ import { Panel } from 'reactflow';
 import {
   Paper,
   Typography,
-  Button,
-  Box,
-  Divider
+  Box
 } from '@mui/material';
 import {
   PlayArrow as PlayArrowIcon,
@@ -14,7 +12,7 @@ import {
   Stop as StopIcon
 } from '@mui/icons-material';
 
-const NodePalette = ({ onAddNode, collapsedCount = 0 }) => {
+const NodePalette = ({ collapsedCount = 0 }) => {
   const nodeTypes = [
     {
       type: 'startNode',
@@ -48,43 +46,45 @@ const NodePalette = ({ onAddNode, collapsedCount = 0 }) => {
 
   return (
     <Panel position="top-right">
-      <Paper sx={{ p: 2, minWidth: 200 }}>
-        <Typography variant="subtitle2" gutterBottom>
-          Add Nodes
+      <Paper sx={{ p: 1, minWidth: 100, maxWidth: 120 }}>
+        <Typography variant="caption" gutterBottom sx={{ fontSize: '0.7rem', fontWeight: 600 }}>
+          Node Types
         </Typography>
         
-        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, mb: 2 }}>
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5, mb: 1 }}>
           {nodeTypes.map(({ type, label, icon, color, description }) => (
-            <Button
+            <Box
               key={type}
-              variant="contained"
-              size="small"
-              startIcon={icon}
-              onClick={() => onAddNode(type)}
-              sx={{ 
-                bgcolor: color,
-                justifyContent: 'flex-start',
-                '&:hover': {
-                  bgcolor: color,
-                  opacity: 0.8
-                }
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 0.5,
+                p: 0.5,
+                borderRadius: 0.5,
+                bgcolor: 'grey.50',
+                border: '1px solid',
+                borderColor: 'grey.200'
               }}
-              title={description}
             >
-              {label}
-            </Button>
+              <Box sx={{ color: color, fontSize: '0.8rem' }}>
+                {icon}
+              </Box>
+              <Box>
+                <Typography variant="caption" sx={{ fontWeight: 500, fontSize: '0.65rem', display: 'block' }}>
+                  {label}
+                </Typography>
+              </Box>
+            </Box>
           ))}
         </Box>
         
-        <Divider sx={{ mb: 1 }} />
-        
-        <Typography variant="caption" display="block" sx={{ mb: 1 }}>
-          💡 <strong>Tip:</strong> Click nodes to configure them, or use the expand/collapse icons to manage complex workflows
+        <Typography variant="caption" display="block" sx={{ fontSize: '0.6rem', mb: 0.5 }}>
+          💡 Use ➕ on edges
         </Typography>
         
         {collapsedCount > 0 && (
-          <Typography variant="caption" display="block" color="text.secondary">
-            Collapsed subtrees: {collapsedCount}
+          <Typography variant="caption" display="block" color="text.secondary" sx={{ fontSize: '0.6rem' }}>
+            Collapsed: {collapsedCount}
           </Typography>
         )}
       </Paper>

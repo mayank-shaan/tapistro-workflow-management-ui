@@ -1,0 +1,72 @@
+/* Enhanced workflow styles */
+
+/* Pulsing animation for add buttons in edit mode */
+@keyframes pulseAddButton {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 4px 12px rgba(33, 150, 243, 0.4);
+  }
+  50% {
+    transform: scale(1.05);
+    box-shadow: 0 6px 16px rgba(33, 150, 243, 0.6);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 4px 12px rgba(33, 150, 243, 0.4);
+  }
+}
+
+/* Dashed line animation for edges in edit mode */
+@keyframes dashMove {
+  to { 
+    stroke-dashoffset: -1000; 
+  }
+}
+
+/* Enhanced edge hover effects */
+.react-flow__edge.react-flow__edge-custom {
+  transition: all 0.2s ease-in-out;
+}
+
+.react-flow__edge.react-flow__edge-custom:hover {
+  stroke-width: 3px !important;
+  stroke: #1976d2 !important;
+}
+
+/* Add button container styling */
+.workflow-add-button {
+  animation: pulseAddButton 2s infinite;
+}
+
+.workflow-add-button:hover {
+  animation: none;
+  transform: scale(1.15) !important;
+}
+
+/* Edit mode indicator for edges */
+.edit-mode-edge {
+  stroke-dasharray: 5,5;
+  animation: dashMove 20s linear infinite;
+}
+
+/* Workflow canvas improvements */
+.react-flow__minimap {
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.react-flow__controls {
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+/* Node selection improvements */
+.react-flow__node.selected {
+  box-shadow: 0 0 0 2px #1976d2, 0 4px 12px rgba(25, 118, 210, 0.3);
+}
+
+/* Enhance the workflow background */
+.react-flow__background {
+  opacity: 0.8;
+}

@@ -16,6 +16,7 @@ const WorkflowManager = ({
     selectedNode,
     configDrawerOpen,
     collapsedNodes,
+    validation,
     
     onNodesChange,
     onEdgesChange,
@@ -26,7 +27,15 @@ const WorkflowManager = ({
     addNode,
     saveNodeConfig,
     deleteNode,
-    closeConfigDrawer
+    closeConfigDrawer,
+    
+    // Enhanced functionality
+    autoLayout,
+    validateWorkflow,
+    undoLastAction,
+    saveWorkflow,
+    runWorkflow,
+    canUndo
   } = useWorkflow(initialNodes, initialEdges);
 
   return (
@@ -34,6 +43,14 @@ const WorkflowManager = ({
       <WorkflowToolbar
         isEditMode={isEditMode}
         onToggleEditMode={toggleEditMode}
+        onAddNode={addNode}
+        onAutoLayout={autoLayout}
+        onValidate={validateWorkflow}
+        onUndo={undoLastAction}
+        onSave={saveWorkflow}
+        onRun={runWorkflow}
+        validation={validation}
+        canUndo={canUndo}
         title={title}
       />
 
@@ -45,7 +62,6 @@ const WorkflowManager = ({
         onConnect={onConnect}
         onNodeClick={onNodeClick}
         isEditMode={isEditMode}
-        onAddNode={addNode}
         collapsedCount={collapsedNodes.size}
       />
 
