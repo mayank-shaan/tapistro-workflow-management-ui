@@ -23,16 +23,39 @@ export const useWorkflow = (initialNodes = [], initialEdges = []) => {
   const [workflowHistory, setWorkflowHistory] = useState([]);
   const [validation, setValidation] = useState({ errors: [], warnings: [], isValid: true });
 
+  // Enhanced onConnect with better error handling and history tracking
   const onConnect = useCallback(
     (params) => {
       if (validateConnection(params, nodes, edges)) {
-        setEdges((eds) => addEdge(params, eds));
-        // Add to history for undo
+        // Add to history before making changes
         setWorkflowHistory(prev => [...prev, { nodes, edges }]);
+        
+        const newEdge = {
+          ...params,
+          id: `${params.source}-${params.target}`,
+          type: 'custom'
+        };
+        
+        setEdges((eds) => addEdge(newEdge, eds));
       }
     },
     [setEdges, nodes, edges]
   );
+
+  // Enhanced onEdgesChange to handle all edge operations properly
+  const handleEdgesChange = useCallback((changes) => {
+    // Add to history before making changes (for non-trivial changes)
+    const hasImportantChanges = changes.some(change => 
+      change.type === 'add' || change.type === 'remove'
+    );
+    
+    if (hasImportantChanges) {
+      setWorkflowHistory(prev => [...prev, { nodes, edges }]);
+    }
+    
+    // Apply the changes
+    onEdgesChange(changes);
+  }, [onEdgesChange, nodes, edges]);
 
   const onNodeClick = useCallback((event, node) => {
     if (isEditMode) {
@@ -63,10 +86,15 @@ export const useWorkflow = (initialNodes = [], initialEdges = []) => {
       },
     };
     
+    // Add to history
+    setWorkflowHistory(prev => [...prev, { nodes, edges }]);
     setNodes((nds) => [...nds, newNode]);
-  }, [nodes, setNodes]);
+  }, [nodes, setNodes, edges]);
 
   const saveNodeConfig = useCallback((nodeId, newConfig) => {
+    // Add to history
+    setWorkflowHistory(prev => [...prev, { nodes, edges }]);
+    
     setNodes((nds) =>
       nds.map((node) => {
         if (node.id === nodeId) {
@@ -84,9 +112,12 @@ export const useWorkflow = (initialNodes = [], initialEdges = []) => {
     );
     setConfigDrawerOpen(false);
     setSelectedNode(null);
-  }, [setNodes]);
+  }, [setNodes, nodes, edges]);
 
   const deleteNode = useCallback((nodeId) => {
+    // Add to history
+    setWorkflowHistory(prev => [...prev, { nodes, edges }]);
+    
     setNodes((nds) => nds.filter((node) => node.id !== nodeId));
     
     setEdges((eds) => eds.filter((edge) => 
@@ -101,7 +132,15 @@ export const useWorkflow = (initialNodes = [], initialEdges = []) => {
     
     setConfigDrawerOpen(false);
     setSelectedNode(null);
-  }, [setNodes, setEdges]);
+  }, [setNodes, setEdges, nodes, edges]);
+
+  // Enhanced delete edge function
+  const deleteEdge = useCallback((edgeId) => {
+    // Add to history
+    setWorkflowHistory(prev => [...prev, { nodes, edges }]);
+    
+    setEdges((eds) => eds.filter((edge) => edge.id !== edgeId));
+  }, [setEdges, nodes, edges]);
 
   const toggleNodeCollapse = useCallback((nodeId) => {
     setCollapsedNodes((prev) => {
@@ -120,12 +159,12 @@ export const useWorkflow = (initialNodes = [], initialEdges = []) => {
     setSelectedNode(null);
   }, []);
 
-  // New enhanced functionality
+  // Enhanced functionality
   const autoLayout = useCallback(() => {
     const { nodes: layoutedNodes, edges: layoutedEdges } = autoLayoutWorkflow(nodes, edges);
+    setWorkflowHistory(prev => [...prev, { nodes, edges }]);
     setNodes(layoutedNodes);
     setEdges(layoutedEdges);
-    setWorkflowHistory(prev => [...prev, { nodes, edges }]);
   }, [nodes, edges, setNodes, setEdges]);
 
   const validateWorkflow = useCallback(() => {
@@ -142,6 +181,11 @@ export const useWorkflow = (initialNodes = [], initialEdges = []) => {
       setWorkflowHistory(prev => prev.slice(0, -1));
     }
   }, [workflowHistory, setNodes, setEdges]);
+
+  // Clear history when needed (to prevent memory leaks)
+  const clearHistory = useCallback(() => {
+    setWorkflowHistory([]);
+  }, []);
 
   const processedNodes = useMemo(() => {
     try {
@@ -205,7 +249,7 @@ export const useWorkflow = (initialNodes = [], initialEdges = []) => {
     validation,
     
     onNodesChange,
-    onEdgesChange,
+    onEdgesChange: handleEdgesChange, // Use enhanced version
     onConnect,
     onNodeClick,
     
@@ -213,6 +257,7 @@ export const useWorkflow = (initialNodes = [], initialEdges = []) => {
     addNode,
     saveNodeConfig,
     deleteNode,
+    deleteEdge, // New function
     toggleNodeCollapse,
     closeConfigDrawer,
     
@@ -220,7 +265,9 @@ export const useWorkflow = (initialNodes = [], initialEdges = []) => {
     autoLayout,
     validateWorkflow,
     undoLastAction,
+    clearHistory, // New function
     canUndo: workflowHistory.length > 0,
+    historyCount: workflowHistory.length, // For debugging
     
     rawNodes: nodes,
     rawEdges: edges,

@@ -41,15 +41,42 @@ const WorkflowCanvas = ({
     }
   }, [nodes, edges, onConnect]);
 
+  // Fixed: Proper edge update handler
   const handleEdgeUpdate = useCallback((oldEdge, newConnection) => {
-    onEdgesChange?.([
-      {
-        type: 'update',
-        id: oldEdge.id,
-        item: { ...oldEdge, ...newConnection }
-      }
-    ]);
-  }, [onEdgesChange]);
+    // Validate the new connection
+    if (validateConnection(newConnection, nodes, edges)) {
+      // Update the edge with new source/target
+      const updatedEdge = {
+        ...oldEdge,
+        source: newConnection.source,
+        target: newConnection.target,
+        sourceHandle: newConnection.sourceHandle,
+        targetHandle: newConnection.targetHandle,
+      };
+      
+      // Use onEdgesChange to update the edge in the state
+      onEdgesChange?.([
+        {
+          type: 'remove',
+          id: oldEdge.id
+        },
+        {
+          type: 'add',
+          item: updatedEdge
+        }
+      ]);
+    }
+  }, [nodes, edges, onEdgesChange]);
+
+  // New: Edge update start handler
+  const handleEdgeUpdateStart = useCallback((evt, edge) => {
+    // Optional: Add visual feedback when edge update starts
+  }, []);
+
+  // New: Edge update end handler
+  const handleEdgeUpdateEnd = useCallback((evt, edge) => {
+    // Optional: Add visual feedback when edge update ends
+  }, []);
 
   return (
     <Box sx={{ flexGrow: 1, position: 'relative' }}>
@@ -63,9 +90,12 @@ const WorkflowCanvas = ({
             onConnect={handleConnect}
             onNodeClick={onNodeClick}
             onEdgeUpdate={handleEdgeUpdate}
+            onEdgeUpdateStart={handleEdgeUpdateStart}
+            onEdgeUpdateEnd={handleEdgeUpdateEnd}
             nodeTypes={nodeTypes}
             edgeTypes={edgeTypes}
             connectionMode={ConnectionMode.Loose}
+            edgeUpdaterRadius={10} // Added: Controls the radius for edge update handles
             fitView
             fitViewOptions={{ padding: 0.2 }}
             proOptions={{ hideAttribution: true }}
@@ -73,6 +103,12 @@ const WorkflowCanvas = ({
             deleteKeyCode="Delete"
             snapToGrid
             snapGrid={[15, 15]}
+            // Enable edge updates only in edit mode
+            edgesUpdatable={isEditMode}
+            edgesFocusable={isEditMode}
+            // Also enable node dragging updates
+            nodesDraggable={isEditMode}
+            nodesConnectable={isEditMode}
           >
             <Controls showInteractive={false} />
             <MiniMap 

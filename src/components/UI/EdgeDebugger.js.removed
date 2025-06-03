@@ -1,0 +1,226 @@
+import React, { useState } from 'react';
+import { 
+  Box, 
+  Typography, 
+  Accordion, 
+  AccordionSummary, 
+  AccordionDetails,
+  List,
+  ListItem,
+  ListItemText,
+  Chip,
+  Button
+} from '@mui/material';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import BugReportIcon from '@mui/icons-material/BugReport';
+
+const EdgeDebugger = ({ nodes, edges, isVisible = false }) => {
+  if (!isVisible) return null;
+
+  const getEdgeInfo = (edge) => {
+    const sourceNode = nodes.find(n => n.id === edge.source);
+    const targetNode = nodes.find(n => n.id === edge.target);
+    
+    return {
+      ...edge,
+      sourceType: sourceNode?.type || 'unknown',
+      targetType: targetNode?.type || 'unknown',
+      sourceLabel: sourceNode?.data?.label || 'Unknown',
+      targetLabel: targetNode?.data?.label || 'Unknown'
+    };
+  };
+
+  const edgeDetails = edges.map(getEdgeInfo);
+
+  const getConnectionValidation = () => {
+    const validations = [];
+    
+    edges.forEach(edge => {
+      const sourceNode = nodes.find(n => n.id === edge.source);
+      const targetNode = nodes.find(n => n.id === edge.target);
+      
+      let status = 'valid';
+      let issues = [];
+      
+      if (!sourceNode || !targetNode) {
+        status = 'error';
+        issues.push('Missing node reference');
+      }
+      
+      if (sourceNode?.type === 'terminalNode') {
+        status = 'warning';
+        issues.push('Terminal node has outgoing connection');
+      }
+      
+      if (targetNode?.type === 'startNode') {
+        status = 'error';
+        issues.push('Start node has incoming connection');
+      }
+      
+      validations.push({
+        edgeId: edge.id,
+        status,
+        issues
+      });
+    });
+    
+    return validations;
+  };
+
+  const validations = getConnectionValidation();
+  const errorCount = validations.filter(v => v.status === 'error').length;
+  const warningCount = validations.filter(v => v.status === 'warning').length;
+
+  return (
+    <Box
+      sx={{
+        position: 'fixed',
+        top: 80,
+        right: 20,
+        width: 350,
+        maxHeight: '60vh',
+        overflow: 'auto',
+        backgroundColor: 'white',
+        border: '1px solid #ddd',
+        borderRadius: 2,
+        boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+        zIndex: 1000
+      }}
+    >
+      <Box sx={{ p: 2, borderBottom: '1px solid #eee' }}>
+        <Typography variant="h6" sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          <BugReportIcon color="primary" />
+          Edge Debugger
+        </Typography>
+        <Box sx={{ display: 'flex', gap: 1, mt: 1 }}>
+          <Chip 
+            label={`${edges.length} Edges`} 
+            size="small" 
+            color="primary" 
+          />
+          {errorCount > 0 && (
+            <Chip 
+              label={`${errorCount} Errors`} 
+              size="small" 
+              color="error" 
+            />
+          )}
+          {warningCount > 0 && (
+            <Chip 
+              label={`${warningCount} Warnings`} 
+              size="small" 
+              color="warning" 
+            />
+          )}
+        </Box>
+      </Box>
+
+      <Accordion>
+        <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+          <Typography>Edge Details</Typography>
+        </AccordionSummary>
+        <AccordionDetails>
+          <List dense>
+            {edgeDetails.map((edge) => (
+              <ListItem key={edge.id} divider>
+                <ListItemText
+                  primary={`${edge.sourceLabel} → ${edge.targetLabel}`}
+                  secondary={
+                    <Box>
+                      <Typography variant="caption" display="block">
+                        ID: {edge.id}
+                      </Typography>
+                      <Typography variant="caption" display="block">
+                        Types: {edge.sourceType} → {edge.targetType}
+                      </Typography>
+                    </Box>
+                  }
+                />
+              </ListItem>
+            ))}
+          </List>
+        </AccordionDetails>
+      </Accordion>
+
+      <Accordion>
+        <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+          <Typography>Validation Results</Typography>
+        </AccordionSummary>
+        <AccordionDetails>
+          <List dense>
+            {validations.map((validation) => (
+              <ListItem key={validation.edgeId} divider>
+                <ListItemText
+                  primary={validation.edgeId}
+                  secondary={
+                    <Box>
+                      <Chip 
+                        label={validation.status} 
+                        size="small" 
+                        color={validation.status === 'error' ? 'error' : validation.status === 'warning' ? 'warning' : 'success'}
+                        sx={{ mr: 1 }}
+                      />
+                      {validation.issues.map((issue, idx) => (
+                        <Typography key={idx} variant="caption" display="block" color="error">
+                          • {issue}
+                        </Typography>
+                      ))}
+                    </Box>
+                  }
+                />
+              </ListItem>
+            ))}
+          </List>
+        </AccordionDetails>
+      </Accordion>
+    </Box>
+  );
+};
+
+// Debug button to toggle the debugger
+const EdgeDebugButton = ({ nodes, edges }) => {
+  const [showDebugger, setShowDebugger] = useState(false);
+
+  return (
+    <>
+      <Button
+        variant="outlined"
+        size="small"
+        startIcon={<BugReportIcon />}
+        onClick={() => setShowDebugger(!showDebugger)}
+        sx={{
+          position: 'fixed',
+          top: 20,
+          right: 20,
+          zIndex: 1001,
+          backgroundColor: 'white'
+        }}
+      >
+        Debug Edges
+      </Button>
+      
+      <EdgeDebugger 
+        nodes={nodes} 
+        edges={edges} 
+        isVisible={showDebugger}
+      />
+      
+      {showDebugger && (
+        <Box
+          sx={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: 'rgba(0,0,0,0.1)',
+            zIndex: 999
+          }}
+          onClick={() => setShowDebugger(false)}
+        />
+      )}
+    </>
+  );
+};
+
+export default EdgeDebugButton;

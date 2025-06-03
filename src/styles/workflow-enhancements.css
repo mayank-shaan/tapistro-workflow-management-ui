@@ -33,6 +33,27 @@
   stroke: #1976d2 !important;
 }
 
+/* Edge update handle styling */
+.react-flow__edgeupdater {
+  width: 12px;
+  height: 12px;
+  background: #1976d2;
+  border: 2px solid white;
+  border-radius: 50%;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.react-flow__edge:hover .react-flow__edgeupdater {
+  opacity: 1;
+}
+
+.react-flow__edgeupdater:hover {
+  background: #1565c0;
+  transform: scale(1.2);
+}
+
 /* Add button container styling */
 .workflow-add-button {
   animation: pulseAddButton 2s infinite;
@@ -69,4 +90,23 @@
 /* Enhance the workflow background */
 .react-flow__background {
   opacity: 0.8;
+}
+
+/* Edge selection highlight */
+.react-flow__edge.selected {
+  stroke: #1976d2 !important;
+  stroke-width: 3px !important;
+}
+
+/* Connection line styling */
+.react-flow__connectionline {
+  stroke: #1976d2;
+  stroke-width: 2px;
+  stroke-dasharray: 5,5;
+}
+
+/* Handle styling for better visibility */
+.react-flow__handle {
+  border: 2px solid #1976d2;
+  background: white;
 }

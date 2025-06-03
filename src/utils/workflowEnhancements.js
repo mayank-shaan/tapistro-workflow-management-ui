@@ -37,7 +37,137 @@ export const autoLayoutWorkflow = (nodes, edges) => {
   return { nodes: layoutedNodes, edges };
 };
 
-// Workflow Validation Class
+// Enhanced Connection validation
+export const validateConnection = (connection, nodes, edges) => {
+  const sourceNode = nodes.find(n => n.id === connection.source);
+  const targetNode = nodes.find(n => n.id === connection.target);
+  
+  // Prevent self-connections
+  if (connection.source === connection.target) {
+    return false;
+  }
+  
+  // Check if nodes exist
+  if (!sourceNode || !targetNode) {
+    return false;
+  }
+  
+  // Check if connection already exists
+  const connectionExists = edges.some(edge => 
+    edge.source === connection.source && edge.target === connection.target
+  );
+  if (connectionExists) {
+    return false;
+  }
+
+  // Enhanced validation based on node types
+  if (sourceNode.type === 'terminalNode') {
+    return false;
+  }
+
+  if (targetNode.type === 'startNode') {
+    return false;
+  }
+
+  // Check for decision node branch limits
+  if (sourceNode.type === 'decisionNode') {
+    const existingOutgoingEdges = edges.filter(e => e.source === connection.source);
+    const maxBranches = sourceNode.data?.config?.maxBranches || 2;
+    
+    if (existingOutgoingEdges.length >= maxBranches) {
+      return false;
+    }
+  }
+
+  // Check for circular references (prevent infinite loops)
+  if (wouldCreateCycle(connection, edges)) {
+    return false;
+  }
+
+  // Check target node input limits
+  const incomingEdges = edges.filter(e => e.target === connection.target);
+  const maxInputs = getMaxInputsForNodeType(targetNode.type);
+  
+  if (incomingEdges.length >= maxInputs) {
+    return false;
+  }
+
+  return true;
+};
+
+// Helper function to detect cycles
+const wouldCreateCycle = (newConnection, existingEdges) => {
+  // Create a temporary edge list with the new connection
+  const allEdges = [...existingEdges, newConnection];
+  
+  // Build adjacency list
+  const graph = {};
+  allEdges.forEach(edge => {
+    if (!graph[edge.source]) graph[edge.source] = [];
+    graph[edge.source].push(edge.target);
+  });
+  
+  // DFS to detect cycle starting from the new connection's target
+  const visited = new Set();
+  const recursionStack = new Set();
+  
+  const hasCycle = (node) => {
+    if (recursionStack.has(node)) return true;
+    if (visited.has(node)) return false;
+    
+    visited.add(node);
+    recursionStack.add(node);
+    
+    const neighbors = graph[node] || [];
+    for (const neighbor of neighbors) {
+      if (hasCycle(neighbor)) return true;
+    }
+    
+    recursionStack.delete(node);
+    return false;
+  };
+  
+  return hasCycle(newConnection.target);
+};
+
+// Get maximum allowed inputs for each node type
+const getMaxInputsForNodeType = (nodeType) => {
+  switch (nodeType) {
+    case 'startNode':
+      return 0; // Start nodes should not have inputs
+    case 'decisionNode':
+    case 'actionNode':
+    case 'terminalNode':
+      return 1; // These typically have one input
+    case 'groupNode':
+      return 5; // Groups can have multiple inputs
+    default:
+      return 1;
+  }
+};
+
+// Enhanced Edge Update Helper
+export const updateEdgeConnection = (oldEdge, newConnection, nodes, edges) => {
+  // Validate the new connection
+  if (!validateConnection(newConnection, nodes, edges)) {
+    return null;
+  }
+  
+  // Create updated edge
+  const updatedEdge = {
+    ...oldEdge,
+    source: newConnection.source,
+    target: newConnection.target,
+    sourceHandle: newConnection.sourceHandle,
+    targetHandle: newConnection.targetHandle,
+    // Update the ID to reflect new connection
+    id: `${newConnection.source}-${newConnection.target}`
+  };
+  
+  return updatedEdge;
+};
+
+// Workflow Validation Class (Enhanced)
 export class WorkflowValidator {
   static validateWorkflow(nodes, edges) {
     const errors = [];
@@ -80,6 +210,17 @@ export class WorkflowValidator {
       warnings.push('Some decision nodes have insufficient branches');
     }
 
+    // Check for isolated nodes
+    const isolatedNodes = nodes.filter(n => {
+      const hasIncoming = edges.some(e => e.target === n.id);
+      const hasOutgoing = edges.some(e => e.source === n.id);
+      return !hasIncoming && !hasOutgoing && n.type !== 'startNode';
+    });
+
+    if (isolatedNodes.length > 0) {
+      warnings.push(`${isolatedNodes.length} isolated nodes found`);
+    }
+
     return { errors, warnings, isValid: errors.length === 0 };
   }
 
@@ -115,7 +256,7 @@ export class WorkflowValidator {
   }
 }
 
-// Node Factory for Creating Different Node Types
+// Node Factory for Creating Different Node Types (Enhanced)
 export const NodeFactory = {
   createStartNode: (position, data = {}) => ({
     id: `start_${Date.now()}`,
@@ -149,7 +290,7 @@ export const NodeFactory = {
       label: 'Decision',
       condition: '',
       branches: ['Yes', 'No'],
-      config: {},
+      config: { maxBranches: 2 },
       ...data
     }
   }),
@@ -179,39 +320,10 @@ export const NodeFactory = {
   })
 };
 
-// Connection validation
-export const validateConnection = (connection, nodes, edges) => {
-  const sourceNode = nodes.find(n => n.id === connection.source);
-  const targetNode = nodes.find(n => n.id === connection.target);
-  
-  // Prevent self-connections
-  if (connection.source === connection.target) return false;
-  
-  // Check if connection already exists
-  const connectionExists = edges.some(edge => 
-    edge.source === connection.source && edge.target === connection.target
-  );
-  if (connectionExists) return false;
-
-  // Validate based on node types
-  if (sourceNode?.type === 'terminalNode') {
-    // Terminal nodes cannot have outgoing connections
-    return false;
-  }
-
-  if (targetNode?.type === 'startNode') {
-    // Start nodes cannot have incoming connections
-    return false;
-  }
-
-  return true;
-};
-
 // Group management utilities
 export const createGroupFromSelection = (selectedNodes, nodes, edges) => {
   if (selectedNodes.length < 2) return null;
   
-  // Calculate group bounds
   const minX = Math.min(...selectedNodes.map(n => n.position.x));
   const minY = Math.min(...selectedNodes.map(n => n.position.y));
   const maxX = Math.max(...selectedNodes.map(n => n.position.x + 150));
