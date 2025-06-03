@@ -84,6 +84,7 @@ const getMaxInputsForNodeType = (nodeType) => {
   }
 };
 
+
 export const updateEdgeConnection = (oldEdge, newConnection, nodes, edges) => {
   if (!validateConnection(newConnection, nodes, edges)) {
     return null;
