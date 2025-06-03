@@ -143,31 +143,6 @@ export const useWorkflow = (initialNodes = [], initialEdges = []) => {
     }
   }, [workflowHistory, setNodes, setEdges]);
 
-  const saveWorkflow = useCallback(() => {
-    // This would typically save to a backend
-    const workflowData = {
-      nodes,
-      edges,
-      metadata: {
-        lastModified: new Date().toISOString(),
-        version: '1.0'
-      }
-    };
-    console.log('Saving workflow:', workflowData);
-    // Here you would call your API to save
-    return workflowData;
-  }, [nodes, edges]);
-
-  const runWorkflow = useCallback(() => {
-    const validationResult = validateWorkflow();
-    if (validationResult.isValid) {
-      console.log('Running workflow with nodes:', nodes, 'and edges:', edges);
-      // Here you would call your workflow execution API
-    } else {
-      console.warn('Cannot run workflow with validation errors:', validationResult.errors);
-    }
-  }, [nodes, edges, validateWorkflow]);
-
   const processedNodes = useMemo(() => {
     try {
       const nodesWithChildren = nodes.map(node => {
@@ -245,8 +220,6 @@ export const useWorkflow = (initialNodes = [], initialEdges = []) => {
     autoLayout,
     validateWorkflow,
     undoLastAction,
-    saveWorkflow,
-    runWorkflow,
     canUndo: workflowHistory.length > 0,
     
     rawNodes: nodes,

@@ -5,7 +5,7 @@ import {
   getBezierPath, 
   useReactFlow 
 } from 'reactflow';
-import { IconButton, Fab } from '@mui/material';
+import { Fab } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import { generateNodeId } from '../../utils/workflowUtils';
 
@@ -21,7 +21,7 @@ export const CustomEdge = ({
   target,
   data 
 }) => {
-  const { setNodes, setEdges, getNodes, getEdges } = useReactFlow();
+  const { setNodes, setEdges, getEdges } = useReactFlow();
   const [isHovered, setIsHovered] = useState(false);
 
   const [edgePath, labelX, labelY] = getBezierPath({

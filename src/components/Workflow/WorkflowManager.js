@@ -33,8 +33,6 @@ const WorkflowManager = ({
     autoLayout,
     validateWorkflow,
     undoLastAction,
-    saveWorkflow,
-    runWorkflow,
     canUndo
   } = useWorkflow(initialNodes, initialEdges);
 
@@ -47,8 +45,6 @@ const WorkflowManager = ({
         onAutoLayout={autoLayout}
         onValidate={validateWorkflow}
         onUndo={undoLastAction}
-        onSave={saveWorkflow}
-        onRun={runWorkflow}
         validation={validation}
         canUndo={canUndo}
         title={title}

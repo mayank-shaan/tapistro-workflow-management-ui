@@ -11,20 +11,16 @@ import {
   Badge,
   Menu,
   MenuItem,
-  IconButton,
   Tooltip
 } from '@mui/material';
 import {
   Visibility as VisibilityIcon,
   Edit as EditIcon,
   Add,
-  Save,
   Undo,
   AutoFixHigh,
   Warning,
-  Error,
-  PlayArrow,
-  MoreVert
+  Error
 } from '@mui/icons-material';
 
 const WorkflowToolbar = ({ 
@@ -34,14 +30,11 @@ const WorkflowToolbar = ({
   onAutoLayout,
   onValidate,
   onUndo,
-  onSave,
-  onRun,
   validation = { errors: [], warnings: [] },
   canUndo = false,
   title = "Tapistro Workflow Management" 
 }) => {
   const [addMenuAnchor, setAddMenuAnchor] = useState(null);
-  const [moreMenuAnchor, setMoreMenuAnchor] = useState(null);
 
   const handleAddNode = (nodeType) => {
     onAddNode?.(nodeType);
@@ -155,46 +148,6 @@ const WorkflowToolbar = ({
           }
           label={<Typography variant="body2" sx={{ color: 'white' }}>Edit Mode</Typography>}
         />
-
-        <Divider orientation="vertical" flexItem sx={{ bgcolor: 'rgba(255,255,255,0.3)' }} />
-
-        {/* Main Actions */}
-        <ButtonGroup size="small">
-          <Button 
-            startIcon={<Save />} 
-            onClick={onSave}
-            variant="contained"
-            sx={{ bgcolor: 'success.main', '&:hover': { bgcolor: 'success.dark' } }}
-          >
-            Save
-          </Button>
-          <Button 
-            startIcon={<PlayArrow />} 
-            onClick={onRun}
-            variant="contained"
-            sx={{ bgcolor: 'warning.main', color: 'black', '&:hover': { bgcolor: 'warning.dark' } }}
-          >
-            Run
-          </Button>
-        </ButtonGroup>
-
-        {/* More Options */}
-        <IconButton 
-          onClick={(e) => setMoreMenuAnchor(e.currentTarget)}
-          sx={{ color: 'white' }}
-        >
-          <MoreVert />
-        </IconButton>
-        
-        <Menu
-          anchorEl={moreMenuAnchor}
-          open={Boolean(moreMenuAnchor)}
-          onClose={() => setMoreMenuAnchor(null)}
-        >
-          <MenuItem onClick={() => setMoreMenuAnchor(null)}>Export Workflow</MenuItem>
-          <MenuItem onClick={() => setMoreMenuAnchor(null)}>Import Workflow</MenuItem>
-          <MenuItem onClick={() => setMoreMenuAnchor(null)}>Settings</MenuItem>
-        </Menu>
       </Toolbar>
     </AppBar>
   );

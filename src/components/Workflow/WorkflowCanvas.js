@@ -4,8 +4,7 @@ import {
   MiniMap,
   Controls,
   Background,
-  ConnectionMode,
-  addEdge
+  ConnectionMode
 } from 'reactflow';
 import { Box } from '@mui/material';
 import { nodeTypes } from '../Nodes';

@@ -24,7 +24,7 @@ export const CustomEdgeWithAddButton = ({
   target,
   data 
 }) => {
-  const { setNodes, setEdges, getNodes, getEdges } = useReactFlow();
+  const { setNodes, setEdges, getEdges } = useReactFlow();
   const [isHovered, setIsHovered] = useState(false);
   const isEditMode = useContext(WorkflowEditContext);
 
