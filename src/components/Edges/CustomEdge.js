@@ -34,7 +34,6 @@ export const CustomEdge = ({
   });
 
   const handleAddNode = () => {
-    // Create new node at the midpoint
     const newNodeId = generateNodeId();
     const newNode = {
       id: newNodeId,
@@ -47,11 +46,8 @@ export const CustomEdge = ({
       }
     };
 
-    // Remove existing edge
     const currentEdges = getEdges();
     const updatedEdges = currentEdges.filter(edge => edge.id !== id);
-
-    // Add new edges: source -> newNode -> target
     const newEdges = [
       ...updatedEdges,
       {
@@ -92,7 +88,6 @@ export const CustomEdge = ({
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
         >
-          {/* Always visible PLUS sign */}
           <Fab
             size="small"
             color="primary"

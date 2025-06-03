@@ -1,5 +1,4 @@
 export const findChildNodes = (nodeId, edges, nodes = [], visited = new Set()) => {
-  // Prevent infinite recursion with cycle detection
   if (visited.has(nodeId)) {
     return [];
   }
@@ -19,7 +18,7 @@ export const findChildNodes = (nodeId, edges, nodes = [], visited = new Set()) =
     }
   });
   
-  return [...new Set(allChildren)]; // Remove duplicates
+  return [...new Set(allChildren)];
 };
 
 export const findAvailablePosition = (existingNodes, maxAttempts = 20) => {

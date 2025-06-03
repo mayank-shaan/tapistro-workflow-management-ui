@@ -1,4 +1,3 @@
-// Sample workflow data with only 4 core node types: Start, Action, Decision, Terminal
 export const sampleWorkflowData = {
   nodes: [
     {
@@ -248,7 +247,6 @@ export const sampleWorkflowData = {
     }
   ],
   edges: [
-    // Start to Enrich
     {
       id: 'start-to-enrich',
       source: 'start-1',
@@ -256,7 +254,6 @@ export const sampleWorkflowData = {
       type: 'custom',
       reconnectable: true
     },
-    // Enrich to Decision nodes
     {
       id: 'enrich-to-ops-decision',
       source: 'action-enrich',
@@ -271,7 +268,6 @@ export const sampleWorkflowData = {
       type: 'custom',
       reconnectable: true
     },
-    // Operations Decision Branches (both TRUE and FALSE)
     {
       id: 'ops-decision-true',
       source: 'decision-persona-ops',
@@ -288,7 +284,6 @@ export const sampleWorkflowData = {
       type: 'custom',
       reconnectable: true
     },
-    // Finance Decision Branches
     {
       id: 'finance-decision-true',
       source: 'decision-persona-finance',
@@ -305,7 +300,6 @@ export const sampleWorkflowData = {
       type: 'custom',
       reconnectable: true
     },
-    // Content to OpenAI
     {
       id: 'content-ops-to-openai',
       source: 'action-content-ops',
@@ -327,7 +321,6 @@ export const sampleWorkflowData = {
       type: 'custom',
       reconnectable: true
     },
-    // OpenAI to Delivery
     {
       id: 'openai-ops-to-delivery',
       source: 'action-openai-ops',
@@ -349,7 +342,6 @@ export const sampleWorkflowData = {
       type: 'custom',
       reconnectable: true
     },
-    // Delivery to Terminal
     {
       id: 'delivery-ops-to-terminal',
       source: 'action-delivery-ops',

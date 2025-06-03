@@ -23,11 +23,9 @@ export const useWorkflow = (initialNodes = [], initialEdges = []) => {
   const [workflowHistory, setWorkflowHistory] = useState([]);
   const [validation, setValidation] = useState({ errors: [], warnings: [], isValid: true });
 
-  // Enhanced onConnect with better error handling and history tracking
   const onConnect = useCallback(
     (params) => {
       if (validateConnection(params, nodes, edges)) {
-        // Add to history before making changes
         setWorkflowHistory(prev => [...prev, { nodes, edges }]);
         
         const newEdge = {
@@ -42,35 +40,27 @@ export const useWorkflow = (initialNodes = [], initialEdges = []) => {
     [setEdges, nodes, edges]
   );
 
-  // Enhanced onNodesChange to track position changes for undo/redo
   const handleNodesChange = useCallback((changes) => {
-    // Check if there are position changes that should be tracked
     const hasPositionChanges = changes.some(change => 
-      change.type === 'position' && change.dragging === false // Only track when drag ends
+      change.type === 'position' && change.dragging === false
     );
     
-    // Check if there are important structural changes
     const hasStructuralChanges = changes.some(change => 
       change.type === 'add' || change.type === 'remove'
     );
     
-    // Add to history for structural changes or completed position changes
     if (hasStructuralChanges || hasPositionChanges) {
       setWorkflowHistory(prev => [...prev, { nodes, edges }]);
     }
     
-    // Apply the changes
     onNodesChange(changes);
   }, [onNodesChange, nodes, edges]);
 
-  // Enhanced onEdgesChange to handle all edge operations properly
   const handleEdgesChange = useCallback((changes) => {
-    // Ensure changes is an array
     if (!Array.isArray(changes)) {
       return;
     }
     
-    // Add to history before making changes (for non-trivial changes)
     const hasImportantChanges = changes.some(change => 
       change.type === 'add' || change.type === 'remove'
     );
@@ -79,7 +69,6 @@ export const useWorkflow = (initialNodes = [], initialEdges = []) => {
       setWorkflowHistory(prev => [...prev, { nodes, edges }]);
     }
     
-    // Apply the changes
     onEdgesChange(changes);
   }, [onEdgesChange, nodes, edges]);
 
@@ -112,13 +101,11 @@ export const useWorkflow = (initialNodes = [], initialEdges = []) => {
       },
     };
     
-    // Add to history
     setWorkflowHistory(prev => [...prev, { nodes, edges }]);
     setNodes((nds) => [...nds, newNode]);
   }, [nodes, setNodes, edges]);
 
   const saveNodeConfig = useCallback((nodeId, newConfig) => {
-    // Add to history
     setWorkflowHistory(prev => [...prev, { nodes, edges }]);
     
     setNodes((nds) =>
@@ -133,7 +120,6 @@ export const useWorkflow = (initialNodes = [], initialEdges = []) => {
             },
           };
 
-          // Special handling for decision nodes - sync branches
           if (node.type === 'decisionNode' && newConfig.branches) {
             updatedNode.data.branches = newConfig.branches;
           }
@@ -148,7 +134,6 @@ export const useWorkflow = (initialNodes = [], initialEdges = []) => {
   }, [setNodes, nodes, edges]);
 
   const deleteNode = useCallback((nodeId) => {
-    // Add to history
     setWorkflowHistory(prev => [...prev, { nodes, edges }]);
     
     setNodes((nds) => nds.filter((node) => node.id !== nodeId));
@@ -167,9 +152,7 @@ export const useWorkflow = (initialNodes = [], initialEdges = []) => {
     setSelectedNode(null);
   }, [setNodes, setEdges, nodes, edges]);
 
-  // Enhanced delete edge function
   const deleteEdge = useCallback((edgeId) => {
-    // Add to history
     setWorkflowHistory(prev => [...prev, { nodes, edges }]);
     
     setEdges((eds) => eds.filter((edge) => edge.id !== edgeId));
@@ -215,7 +198,6 @@ export const useWorkflow = (initialNodes = [], initialEdges = []) => {
     }
   }, [workflowHistory, setNodes, setEdges]);
 
-  // Clear history when needed (to prevent memory leaks)
   const clearHistory = useCallback(() => {
     setWorkflowHistory([]);
   }, []);
@@ -251,7 +233,6 @@ export const useWorkflow = (initialNodes = [], initialEdges = []) => {
       return visibleNodes;
     } catch (error) {
       console.error('Error processing nodes:', error);
-      // Return basic nodes without child processing if there's an error
       return nodes.map(node => ({
         ...node,
         data: {
@@ -281,8 +262,8 @@ export const useWorkflow = (initialNodes = [], initialEdges = []) => {
     collapsedNodes,
     validation,
     
-    onNodesChange: handleNodesChange, // Use enhanced version
-    onEdgesChange: handleEdgesChange, // Use enhanced version
+    onNodesChange: handleNodesChange,
+    onEdgesChange: handleEdgesChange,
     onConnect,
     onNodeClick,
     
@@ -294,7 +275,6 @@ export const useWorkflow = (initialNodes = [], initialEdges = []) => {
     toggleNodeCollapse,
     closeConfigDrawer,
     
-    // Enhanced functionality
     autoLayout,
     validateWorkflow,
     undoLastAction,

@@ -5,11 +5,9 @@ import { CallSplit } from '@mui/icons-material';
 import BaseNode from './BaseNode';
 
 const DecisionNode = ({ data, id }) => {
-  // Decision nodes should always have exactly 2 branches: True and False
   const trueBranch = data.config?.trueBranchLabel || 'True';
   const falseBranch = data.config?.falseBranchLabel || 'False';
 
-  // Generate exactly 2 handles for True/False branches
   const customHandles = [
     {
       type: 'source',
@@ -18,7 +16,7 @@ const DecisionNode = ({ data, id }) => {
       style: {
         left: '33%',
         transform: 'translateX(-50%)',
-        backgroundColor: '#4caf50' // Green for True
+        backgroundColor: '#4caf50'
       }
     },
     {
@@ -28,7 +26,7 @@ const DecisionNode = ({ data, id }) => {
       style: {
         left: '67%',
         transform: 'translateX(-50%)',
-        backgroundColor: '#f44336' // Red for False
+        backgroundColor: '#f44336'
       }
     }
   ];

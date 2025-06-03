@@ -9,7 +9,6 @@ import { Fab, Tooltip, Zoom } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import { generateNodeId } from '../../utils/workflowUtils';
 
-// Create a context to pass edit mode to edges
 export const WorkflowEditContext = React.createContext(false);
 
 export const CustomEdgeWithAddButton = ({ 
@@ -42,7 +41,6 @@ export const CustomEdgeWithAddButton = ({
   });
 
   const handleAddNode = useCallback(() => {
-    // Create new node at the midpoint
     const newNodeId = generateNodeId();
     const newNode = {
       id: newNodeId,
@@ -55,16 +53,14 @@ export const CustomEdgeWithAddButton = ({
       }
     };
 
-    // Get current edges and create new edge configuration
     const currentEdges = getEdges();
     
-    // Add new edges: source -> newNode -> target
     const newEdges = [
       {
         id: `${source}-${newNodeId}`,
         source: source,
         target: newNodeId,
-        sourceHandle: sourceHandle, // Preserve original source handle
+        sourceHandle: sourceHandle,
         type: 'custom'
       },
       {
@@ -75,7 +71,6 @@ export const CustomEdgeWithAddButton = ({
       }
     ];
 
-    // Update state: add node and replace edge
     const finalEdges = currentEdges.filter(edge => edge.id !== id).concat(newEdges);
     
     setNodes(nodes => [...nodes, newNode]);
@@ -92,7 +87,6 @@ export const CustomEdgeWithAddButton = ({
     setEdges
   ]);
 
-  // Determine edge styling based on sourceHandle for decision nodes
   const getEdgeStyle = () => {
     const baseStyle = {
       strokeWidth: isHovered || selected ? 3 : 2,
@@ -101,7 +95,6 @@ export const CustomEdgeWithAddButton = ({
       animation: isEditMode ? 'dash 20s linear infinite' : 'none',
     };
 
-    // Add color coding for decision node branches
     if (sourceHandle === 'true') {
       baseStyle.stroke = isHovered || selected ? '#2e7d32' : '#4caf50';
     } else if (sourceHandle === 'false') {
@@ -120,7 +113,6 @@ export const CustomEdgeWithAddButton = ({
       />
       
       <EdgeLabelRenderer>
-        {/* Add Node Button - Available on hover in both edit and view modes */}
         <div
           style={{
             position: 'absolute',
@@ -160,7 +152,6 @@ export const CustomEdgeWithAddButton = ({
           </Zoom>
         </div>
 
-        {/* Edge Label for Decision Branches */}
         {sourceHandle && (sourceHandle === 'true' || sourceHandle === 'false') && (
           <div
             style={{

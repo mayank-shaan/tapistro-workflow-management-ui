@@ -18,7 +18,6 @@ const GroupNode = ({ data, id, selected }) => {
     const newExpanded = !isExpanded;
     setIsExpanded(newExpanded);
     
-    // Show/hide child nodes
     const nodes = getNodes();
     const childNodeIds = data.childNodes || [];
     

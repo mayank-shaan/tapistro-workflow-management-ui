@@ -25,14 +25,12 @@ const WorkflowCanvas = ({
 }) => {
   const reactFlowWrapper = useRef(null);
 
-  // Create edge types - simplified since React Flow handles reconnection
   const edgeTypes = useMemo(() => ({
     custom: CustomEdgeWithAddButton,
     default: CustomEdgeWithAddButton
   }), []);
 
   const handleConnect = useCallback((params) => {
-    // Validate connection before adding
     if (validateConnection(params, nodes, edges)) {
       const newEdge = {
         ...params,
@@ -43,12 +41,9 @@ const WorkflowCanvas = ({
     }
   }, [nodes, edges, onConnect]);
 
-  // Use React Flow's built-in edge reconnection
   const handleReconnect = useCallback((oldEdge, newConnection) => {
-    // Use React Flow's reconnectEdge utility to get the updated edges array
     const updatedEdges = reconnectEdge(oldEdge, newConnection, edges);
     
-    // Find the new edge that was created
     const newEdge = updatedEdges.find(edge => 
       edge.source === newConnection.source && 
       edge.target === newConnection.target &&
@@ -56,7 +51,6 @@ const WorkflowCanvas = ({
     );
     
     if (newEdge) {
-      // Apply the changes using standard React Flow change format
       onEdgesChange?.([
         { type: 'remove', id: oldEdge.id },
         { type: 'add', item: newEdge }
@@ -86,12 +80,9 @@ const WorkflowCanvas = ({
             deleteKeyCode="Delete"
             snapToGrid
             snapGrid={[15, 15]}
-            // Enable edge reconnection (this is the key setting!)
             edgesReconnectable={isEditMode}
-            // Allow interactions in both edit and view modes
-            nodesDraggable={true} // Always allow node dragging
-            nodesConnectable={true} // Always allow node connections
-            // Only restrict node deletion and selection to edit mode
+            nodesDraggable={true}
+            nodesConnectable={true}
             nodesDeletable={isEditMode}
             edgesDeletable={isEditMode}
           >

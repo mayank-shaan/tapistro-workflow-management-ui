@@ -99,7 +99,6 @@ const NodeConfigForm = ({ nodeType, config, onChange }) => {
                   const params = JSON.parse(e.target.value);
                   updateConfig('parameters', params);
                 } catch (err) {
-                  // Invalid JSON, don't update
                 }
               }}
               helperText="Configuration parameters in JSON format"
@@ -224,7 +223,6 @@ const NodeConfigForm = ({ nodeType, config, onChange }) => {
                   const returnValue = JSON.parse(e.target.value);
                   updateConfig('returnValue', returnValue);
                 } catch (err) {
-                  // Invalid JSON, don't update
                 }
               }}
               helperText="Final return value in JSON format"
