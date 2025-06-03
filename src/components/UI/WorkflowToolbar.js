@@ -14,8 +14,6 @@ import {
   Tooltip
 } from '@mui/material';
 import {
-  Visibility as VisibilityIcon,
-  Edit as EditIcon,
   Add,
   Undo,
   AutoFixHigh,
