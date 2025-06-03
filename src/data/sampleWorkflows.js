@@ -271,15 +271,14 @@ export const sampleWorkflowData = {
       type: 'custom',
       reconnectable: true
     },
-    // Operations Decision Branches (both TRUE and FALSE) - RECONNECTABLE
+    // Operations Decision Branches (both TRUE and FALSE)
     {
       id: 'ops-decision-true',
       source: 'decision-persona-ops',
       sourceHandle: 'true',
       target: 'action-content-ops',
       type: 'custom',
-      reconnectable: true,
-      label: 'TRUE'
+      reconnectable: true
     },
     {
       id: 'ops-decision-false',
@@ -287,18 +286,16 @@ export const sampleWorkflowData = {
       sourceHandle: 'false',
       target: 'action-content-finance',
       type: 'custom',
-      reconnectable: true,
-      label: 'FALSE'
+      reconnectable: true
     },
-    // Finance Decision Branches - RECONNECTABLE
+    // Finance Decision Branches
     {
       id: 'finance-decision-true',
       source: 'decision-persona-finance',
       sourceHandle: 'true',
       target: 'action-content-finance',
       type: 'custom',
-      reconnectable: true,
-      label: 'TRUE'
+      reconnectable: true
     },
     {
       id: 'finance-decision-false',
@@ -306,8 +303,7 @@ export const sampleWorkflowData = {
       sourceHandle: 'false',
       target: 'action-content-hr',
       type: 'custom',
-      reconnectable: true,
-      label: 'FALSE'
+      reconnectable: true
     },
     // Content to OpenAI
     {
@@ -379,8 +375,7 @@ export const sampleWorkflowData = {
   metadata: {
     name: 'Core Workflow - 4 Node Types',
     description: 'Workflow using only Start, Action, Decision, and Terminal nodes',
-    version: '1.1',
-    createdAt: new Date().toISOString(),
-    testScenario: 'Decision node with both TRUE and FALSE branches - test reconnection preserves correct handle'
+    version: '1.2',
+    createdAt: new Date().toISOString()
   }
 };

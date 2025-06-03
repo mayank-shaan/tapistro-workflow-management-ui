@@ -43,11 +43,8 @@ const WorkflowCanvas = ({
     }
   }, [nodes, edges, onConnect]);
 
-  // FIXED: Use React Flow's built-in edge reconnection properly
+  // Use React Flow's built-in edge reconnection
   const handleReconnect = useCallback((oldEdge, newConnection) => {
-    console.log('🔄 React Flow onReconnect:', { oldEdge, newConnection });
-    console.log('🎯 Preserving sourceHandle:', oldEdge.sourceHandle);
-    
     // Use React Flow's reconnectEdge utility to get the updated edges array
     const updatedEdges = reconnectEdge(oldEdge, newConnection, edges);
     
@@ -55,19 +52,15 @@ const WorkflowCanvas = ({
     const newEdge = updatedEdges.find(edge => 
       edge.source === newConnection.source && 
       edge.target === newConnection.target &&
-      edge.sourceHandle === oldEdge.sourceHandle // This should be preserved
+      edge.sourceHandle === oldEdge.sourceHandle
     );
     
     if (newEdge) {
-      console.log('✅ New edge with preserved sourceHandle:', newEdge);
-      
       // Apply the changes using standard React Flow change format
       onEdgesChange?.([
         { type: 'remove', id: oldEdge.id },
         { type: 'add', item: newEdge }
       ]);
-    } else {
-      console.error('❌ Failed to create new edge during reconnection');
     }
   }, [edges, onEdgesChange]);
 

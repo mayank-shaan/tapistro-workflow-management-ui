@@ -18,8 +18,7 @@ import {
   Undo,
   AutoFixHigh,
   Warning,
-  Error,
-  BugReport
+  Error
 } from '@mui/icons-material';
 
 const WorkflowToolbar = ({ 
@@ -29,7 +28,6 @@ const WorkflowToolbar = ({
   onAutoLayout,
   onValidate,
   onUndo,
-  onDebugEdges, // New prop for edge debugging
   validation = { errors: [], warnings: [] },
   canUndo = false,
   title = "Tapistro Workflow Management" 
@@ -125,17 +123,6 @@ const WorkflowToolbar = ({
             sx={{ color: 'white' }}
           >
             Validate
-          </Button>
-        </Tooltip>
-
-        <Tooltip title="Debug edge connections">
-          <Button
-            startIcon={<BugReport />}
-            onClick={onDebugEdges}
-            size="small"
-            sx={{ color: 'white' }}
-          >
-            Debug
           </Button>
         </Tooltip>
 

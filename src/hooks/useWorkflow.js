@@ -65,11 +65,8 @@ export const useWorkflow = (initialNodes = [], initialEdges = []) => {
 
   // Enhanced onEdgesChange to handle all edge operations properly
   const handleEdgesChange = useCallback((changes) => {
-    console.log('🔄 handleEdgesChange called with:', changes);
-    
     // Ensure changes is an array
     if (!Array.isArray(changes)) {
-      console.error('❌ changes is not an array:', changes);
       return;
     }
     

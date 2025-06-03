@@ -120,47 +120,45 @@ export const CustomEdgeWithAddButton = ({
       />
       
       <EdgeLabelRenderer>
-        {/* Add Node Button - Available on hover in edit mode */}
-        {isEditMode && (
-          <div
-            style={{
-              position: 'absolute',
-              transform: `translate(-50%, -50%) translate(${labelX}px,${labelY}px)`,
-              pointerEvents: 'all',
-            }}
-            onMouseEnter={() => setIsHovered(true)}
-            onMouseLeave={() => setIsHovered(false)}
-          >
-            <Zoom in={isHovered}>
-              <Tooltip title="Click to add a new node here" placement="top">
-                <Fab
-                  size="small"
-                  color="primary"
-                  onClick={handleAddNode}
-                  sx={{
-                    width: 32,
-                    height: 32,
-                    minHeight: 32,
-                    backgroundColor: isHovered ? '#1976d2' : '#e3f2fd',
-                    color: isHovered ? 'white' : '#1976d2',
-                    border: '2px solid #1976d2',
-                    boxShadow: '0 2px 8px rgba(25, 118, 210, 0.3)',
-                    '&:hover': {
-                      backgroundColor: '#1565c0',
-                      color: 'white',
-                      transform: 'scale(1.15)',
-                      boxShadow: '0 6px 16px rgba(21, 101, 192, 0.6)',
-                    },
-                    transition: 'all 0.3s ease-in-out',
-                    zIndex: 1000
-                  }}
-                >
-                  <AddIcon fontSize="small" />
-                </Fab>
-              </Tooltip>
-            </Zoom>
-          </div>
-        )}
+        {/* Add Node Button - Available on hover in both edit and view modes */}
+        <div
+          style={{
+            position: 'absolute',
+            transform: `translate(-50%, -50%) translate(${labelX}px,${labelY}px)`,
+            pointerEvents: 'all',
+          }}
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
+        >
+          <Zoom in={isHovered}>
+            <Tooltip title="Click to add a new node here" placement="top">
+              <Fab
+                size="small"
+                color="primary"
+                onClick={handleAddNode}
+                sx={{
+                  width: 32,
+                  height: 32,
+                  minHeight: 32,
+                  backgroundColor: isHovered ? '#1976d2' : '#e3f2fd',
+                  color: isHovered ? 'white' : '#1976d2',
+                  border: '2px solid #1976d2',
+                  boxShadow: '0 2px 8px rgba(25, 118, 210, 0.3)',
+                  '&:hover': {
+                    backgroundColor: '#1565c0',
+                    color: 'white',
+                    transform: 'scale(1.15)',
+                    boxShadow: '0 6px 16px rgba(21, 101, 192, 0.6)',
+                  },
+                  transition: 'all 0.3s ease-in-out',
+                  zIndex: 1000
+                }}
+              >
+                <AddIcon fontSize="small" />
+              </Fab>
+            </Tooltip>
+          </Zoom>
+        </div>
 
         {/* Edge Label for Decision Branches */}
         {sourceHandle && (sourceHandle === 'true' || sourceHandle === 'false') && (

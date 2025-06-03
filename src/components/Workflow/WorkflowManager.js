@@ -1,7 +1,6 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Box } from '@mui/material';
 import { WorkflowToolbar, NodeConfigDrawer } from '../UI';
-import EdgeDebugger from '../UI/EdgeDebugger';
 import WorkflowCanvas from './WorkflowCanvas';
 import useWorkflow from '../../hooks/useWorkflow';
 
@@ -10,8 +9,6 @@ const WorkflowManager = ({
   initialEdges = [], 
   title 
 }) => {
-  const [debuggerOpen, setDebuggerOpen] = useState(false);
-  
   const {
     nodes,
     edges,
@@ -48,7 +45,6 @@ const WorkflowManager = ({
         onAutoLayout={autoLayout}
         onValidate={validateWorkflow}
         onUndo={undoLastAction}
-        onDebugEdges={() => setDebuggerOpen(true)}
         validation={validation}
         canUndo={canUndo}
         title={title}
@@ -71,13 +67,6 @@ const WorkflowManager = ({
         onClose={closeConfigDrawer}
         onSave={saveNodeConfig}
         onDelete={deleteNode}
-      />
-      
-      <EdgeDebugger
-        edges={edges}
-        nodes={nodes}
-        open={debuggerOpen}
-        onClose={() => setDebuggerOpen(false)}
       />
     </Box>
   );
