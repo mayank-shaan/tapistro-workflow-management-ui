@@ -253,107 +253,127 @@ export const sampleWorkflowData = {
       id: 'start-to-enrich',
       source: 'start-1',
       target: 'action-enrich',
-      type: 'custom'
+      type: 'custom',
+      reconnectable: true
     },
     // Enrich to Decision nodes
     {
       id: 'enrich-to-ops-decision',
       source: 'action-enrich',
       target: 'decision-persona-ops',
-      type: 'custom'
+      type: 'custom',
+      reconnectable: true
     },
     {
       id: 'enrich-to-finance-decision',
       source: 'action-enrich',
       target: 'decision-persona-finance',
-      type: 'custom'
+      type: 'custom',
+      reconnectable: true
     },
-    // Operations Decision Branches (both TRUE and FALSE)
+    // Operations Decision Branches (both TRUE and FALSE) - RECONNECTABLE
     {
       id: 'ops-decision-true',
       source: 'decision-persona-ops',
       sourceHandle: 'true',
       target: 'action-content-ops',
-      type: 'custom'
+      type: 'custom',
+      reconnectable: true,
+      label: 'TRUE'
     },
     {
       id: 'ops-decision-false',
       source: 'decision-persona-ops',
       sourceHandle: 'false',
       target: 'action-content-finance',
-      type: 'custom'
+      type: 'custom',
+      reconnectable: true,
+      label: 'FALSE'
     },
-    // Finance Decision Branches
+    // Finance Decision Branches - RECONNECTABLE
     {
       id: 'finance-decision-true',
       source: 'decision-persona-finance',
       sourceHandle: 'true',
       target: 'action-content-finance',
-      type: 'custom'
+      type: 'custom',
+      reconnectable: true,
+      label: 'TRUE'
     },
     {
       id: 'finance-decision-false',
       source: 'decision-persona-finance',
       sourceHandle: 'false',
       target: 'action-content-hr',
-      type: 'custom'
+      type: 'custom',
+      reconnectable: true,
+      label: 'FALSE'
     },
     // Content to OpenAI
     {
       id: 'content-ops-to-openai',
       source: 'action-content-ops',
       target: 'action-openai-ops',
-      type: 'custom'
+      type: 'custom',
+      reconnectable: true
     },
     {
       id: 'content-finance-to-openai',
       source: 'action-content-finance',
       target: 'action-openai-finance',
-      type: 'custom'
+      type: 'custom',
+      reconnectable: true
     },
     {
       id: 'content-hr-to-openai',
       source: 'action-content-hr',
       target: 'action-openai-hr',
-      type: 'custom'
+      type: 'custom',
+      reconnectable: true
     },
     // OpenAI to Delivery
     {
       id: 'openai-ops-to-delivery',
       source: 'action-openai-ops',
       target: 'action-delivery-ops',
-      type: 'custom'
+      type: 'custom',
+      reconnectable: true
     },
     {
       id: 'openai-finance-to-delivery',
       source: 'action-openai-finance',
       target: 'action-delivery-finance',
-      type: 'custom'
+      type: 'custom',
+      reconnectable: true
     },
     {
       id: 'openai-hr-to-delivery',
       source: 'action-openai-hr',
       target: 'action-delivery-hr',
-      type: 'custom'
+      type: 'custom',
+      reconnectable: true
     },
     // Delivery to Terminal
     {
       id: 'delivery-ops-to-terminal',
       source: 'action-delivery-ops',
       target: 'terminal-ops',
-      type: 'custom'
+      type: 'custom',
+      reconnectable: true
     },
     {
       id: 'delivery-finance-to-terminal',
       source: 'action-delivery-finance',
       target: 'terminal-finance',
-      type: 'custom'
+      type: 'custom',
+      reconnectable: true
     },
     {
       id: 'delivery-hr-to-terminal',
       source: 'action-delivery-hr',
       target: 'terminal-hr',
-      type: 'custom'
+      type: 'custom',
+      reconnectable: true
     }
   ],
   metadata: {

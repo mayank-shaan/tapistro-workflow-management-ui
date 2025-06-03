@@ -4,7 +4,8 @@ import {
   MiniMap,
   Controls,
   Background,
-  ConnectionMode
+  ConnectionMode,
+  reconnectEdge
 } from 'reactflow';
 import { Box } from '@mui/material';
 import { nodeTypes } from '../Nodes';
@@ -24,20 +25,11 @@ const WorkflowCanvas = ({
 }) => {
   const reactFlowWrapper = useRef(null);
 
-  // Create edge types with onEdgesChange callback
-  const edgeTypes = useMemo(() => {
-    const EdgeWithCallback = (props) => (
-      <CustomEdgeWithAddButton 
-        {...props} 
-        onEdgesChange={onEdgesChange}
-      />
-    );
-    
-    return {
-      custom: EdgeWithCallback,
-      default: EdgeWithCallback
-    };
-  }, [onEdgesChange]);
+  // Create edge types - simplified since React Flow handles reconnection
+  const edgeTypes = useMemo(() => ({
+    custom: CustomEdgeWithAddButton,
+    default: CustomEdgeWithAddButton
+  }), []);
 
   const handleConnect = useCallback((params) => {
     // Validate connection before adding
@@ -51,6 +43,34 @@ const WorkflowCanvas = ({
     }
   }, [nodes, edges, onConnect]);
 
+  // FIXED: Use React Flow's built-in edge reconnection properly
+  const handleReconnect = useCallback((oldEdge, newConnection) => {
+    console.log('🔄 React Flow onReconnect:', { oldEdge, newConnection });
+    console.log('🎯 Preserving sourceHandle:', oldEdge.sourceHandle);
+    
+    // Use React Flow's reconnectEdge utility to get the updated edges array
+    const updatedEdges = reconnectEdge(oldEdge, newConnection, edges);
+    
+    // Find the new edge that was created
+    const newEdge = updatedEdges.find(edge => 
+      edge.source === newConnection.source && 
+      edge.target === newConnection.target &&
+      edge.sourceHandle === oldEdge.sourceHandle // This should be preserved
+    );
+    
+    if (newEdge) {
+      console.log('✅ New edge with preserved sourceHandle:', newEdge);
+      
+      // Apply the changes using standard React Flow change format
+      onEdgesChange?.([
+        { type: 'remove', id: oldEdge.id },
+        { type: 'add', item: newEdge }
+      ]);
+    } else {
+      console.error('❌ Failed to create new edge during reconnection');
+    }
+  }, [edges, onEdgesChange]);
+
   return (
     <Box sx={{ flexGrow: 1, position: 'relative' }}>
       <div ref={reactFlowWrapper} style={{ width: '100%', height: '100%' }}>
@@ -61,6 +81,7 @@ const WorkflowCanvas = ({
             onNodesChange={onNodesChange}
             onEdgesChange={onEdgesChange}
             onConnect={handleConnect}
+            onReconnect={handleReconnect}
             onNodeClick={onNodeClick}
             nodeTypes={nodeTypes}
             edgeTypes={edgeTypes}
@@ -72,6 +93,8 @@ const WorkflowCanvas = ({
             deleteKeyCode="Delete"
             snapToGrid
             snapGrid={[15, 15]}
+            // Enable edge reconnection (this is the key setting!)
+            edgesReconnectable={isEditMode}
             // Allow interactions in both edit and view modes
             nodesDraggable={true} // Always allow node dragging
             nodesConnectable={true} // Always allow node connections
